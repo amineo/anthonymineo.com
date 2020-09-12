@@ -4,8 +4,18 @@
         <description><![CDATA[AnthonyMineo.com - Blog]]></description>
         <link>https://anthonymineo.com</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Fri, 28 Aug 2020 19:45:34 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 12 Sep 2020 18:20:36 GMT</lastBuildDate>
         <atom:link href="https://anthonymineo.com/rss.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[Hey, I rebuilt my blog with Next.js]]></title>
+            <description><![CDATA[My original blog was built with Ghost and hosted on DigitalOcean. And while I enjoyed my time with Ghost, there were a few things I wanted to explore outside its scope, like writing posts with MDX! Mounting React components in blog posts is really cool! While I did manage to work everything out, the migration was not a cakewalk, however. It's 2020, what could go wrong?]]></description>
+            <link>https://anthonymineo.com/rebuilding-my-blog-with-nextjs/</link>
+            <guid isPermaLink="false">/rebuilding-my-blog-with-nextjs</guid>
+            <pubDate>Sat, 12 Sep 2020 11:00:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
         <item>
             <title><![CDATA[Automatically clear that bash history!]]></title>
             <description><![CDATA[Bash stores a history of commands that were previously executed by a user in plain text (.bash_history). As you probably realize, this becomes a security issue when you're running commands that contain sensitive information]]></description>
