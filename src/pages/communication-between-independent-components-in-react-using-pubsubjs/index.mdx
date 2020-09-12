@@ -1,0 +1,194 @@
+import {Highlight} from '@/components/Editor';
+import { anthonymineo } from '@/authors'
+import image from './card.jpg'
+import {tag} from '@/tags';
+
+export const meta = {
+  draft: false,
+  featured: false,
+  title: "Communication Between Independent Components in React using PubSubJS",
+  description: "During my adventures in learning React, I came across a particular roadblock with independent component communication. I understand how 'parent-child components' talk. The React doc's explain that pretty well. However, a place that could use an improvement is explaining with examples on how to make independent components communicate.",
+  date: "2016-07-17T19:51:00.0Z",
+  updated: "2020-08-27T20:00:00.0Z",
+  authors: [anthonymineo],
+  tags: [tag("React"), tag("PubSubJS"), tag("JavaScript")],
+  slug: "/communication-between-independent-components-in-react-using-pubsubjs/",
+  image,
+  repo: "https://gist.github.com/amineo/c4b01986952899c3fb299580e4de481f"
+}
+
+export const config = { amp: 'hybrid' }
+
+<!--excerpt-->
+
+During my adventures in learning React, I came across a particular roadblock with independent component communication. I understand how 'parent-child components' talk. The React doc's explain that pretty well. However, a place that could use an improvement is explaining with examples on how to make independent components communicate.
+
+<!--/excerpt-->
+
+
+
+During my adventures in learning React, I came across a particular roadblock with independent component communication. I understand how **[parent-child components](https://facebook.github.io/react/tips/communicate-between-components.html)** talk. The React doc's explain that pretty well. However, a place that could use an improvement is explaining (*with examples*) on how to make independent components communicate.
+
+As React's official documentation specifies:
+>For communication between two components that don't have a parent-child relationship, you can set up your own global event system. Subscribe to events in **componentDidMount()**, unsubscribe in **componentWillUnmount()**, and call **setState()** when you receive an event. [Flux pattern](https://facebook.github.io/flux/) is one of the possible ways to arrange this.
+
+Basically this just says... You need to use an event system and they recommend the Flux Pattern.
+
+Flux is intriguing and definitely worth looking into, but I also felt it might of been a little overkill for what I was trying to accomplish. So instead, I opted to use the [PubSubJS](https://github.com/mroderick/PubSubJS) library and it was magic. PubSubJS is a very handy [topic-based publish/subscribe system](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) that could be integrated into your application without too much work.
+
+---
+
+## Example Scenario
+
+#### The hypothetical File Manager UI with 2 separate components
+
+**Component A** will be the *file-upload* component and **Component B** is the available files in our file manager component that will be rendered from an AJAX request.
+
+Our goal is for the file-upload component (*the publisher*) to trigger an event after the upload has completed successfully and in-turn letting the file-list component (*the subscriber*) know it should fire a request to get the updated list of files.
+
+
+## Example Code
+#### Setup
+
+ * **Install** <Highlight>[PubSubJS](https://github.com/mroderick/PubSubJS)</Highlight>  (by Morgan Roderick)<br/>`$ npm install pubsub-js --save-dev`
+
+ * **Install** <Highlight>[React-Dropzone-Component
+](https://github.com/felixrieseberg/React-Dropzone-Component)</Highlight> (by Felix Rieseberg)<br/>
+`$ npm install react-dropzone-component --save-dev`<br/>
+*This component is a wrapper for the [Dropzone.js](http://www.dropzonejs.com) library*.
+
+ * **Install** <Highlight>[then-request](https://github.com/then/then-request)</Highlight> (by Forbes Lindesay & Nathan Zadoks) a nice and simple library for making requests with promises.<br/>
+`$ npm install then-request --save-dev`
+   
+*Note: You do not have to use then-request for AJAX calls. I chose it for this example because it's lightweight and the syntax is very clean.*
+
+[View Gist on GitHub](https://gist.github.com/amineo/c4b01986952899c3fb299580e4de481f)
+```jsx
+/**
+ * PubSubReactExample.jsx
+ *
+ * Anthony Mineo (@Mineo27)
+ *
+ * Disclaimer: The goal was to make this example easy to follow.
+ * Obviously, there are a number of optimizations that can be done to the code below.
+**/
+
+// Imports / Requires 
+import React from 'react';
+import PubSub from 'pubsub-js';
+import request from 'then-request';
+import DropzoneComponent from 'react-dropzone-component';
+// Use your preferred method for loading a component's CSS
+require('dropzone/dist/min/dropzone.min.css');
+
+
+
+
+/**
+ * Component that makes a request for the list of files
+ * @class FileList
+ */
+export class FileList extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      fileCollection: [],
+      endpoint: 'http://website.com/api/filelist.json'
+    }
+  }
+
+  componentWillMount(){
+    // This is where we subscribe this class to the 'GET FILES' subscription.
+    // once a publish event for 'GET FILES' has been fired, FileList.subscriber() will be triggered.
+    this.token = PubSub.subscribe('GET FILES', this.subscriber.bind(this));
+  }
+  componentDidMount(){
+    PubSub.publish('GET FILES', this.token);
+  }
+  componentWillUnmount(){
+    PubSub.unsubscribe(this.token);
+  }
+
+  // The function that is subscribed to the publisher
+  subscriber(msg, data){
+    var self = this;
+    request('GET', 'http://website.com/api/endpoint.json').done(function(result){
+      this.setState({
+        fileCollection: result
+      });
+    }.bind(self));
+  }
+
+  // return our files in an list
+  returnFileInfo(){
+    return this.state.fileCollection.map(function(file){
+      return <li key={file.id}>
+                <a href={file.url}>
+                  <strong>{file.name}</strong>
+                </a>
+              </li>;
+    });
+  }
+
+  render(){
+    return  <ul>{this.returnFileInfo()}</ul>;
+  }
+}
+
+
+
+/**
+ * Dropzone File Uploader Component
+ * @class FileUploader
+ */
+export class FileUploader extends React.Component {
+  constructor(props){
+    super(props);
+    // Our DropzoneComponent config
+    this.state = {
+      componentConfig : {
+        postUrl: 'endpoint.cfm?action=uploadFile'
+      },
+      djsConfig:{},
+      eventHandlers:{
+        success: this.updateFileList.bind(this)
+      }
+    };
+  }
+
+
+  updateFileList(response){
+    // Example response object from our server could be 
+    /*
+        {
+            id:10,
+            url:'https://anthonymineo.com/mycoolimage.png',
+            name:'Making beer'
+        }
+    */
+    // You can also publish strings if you like
+
+
+
+    // The magic publish event
+    // This lets the subscribers know that they need to do their job
+    // and trigger any events that need to take place
+    /*
+    PubSub.publish('GET FILES', response);
+    */
+    PubSub.publish('GET FILES', 'EAT PIE');
+  }
+
+
+
+  render(){
+    return <DropzoneComponent 
+            config={this.state.componentConfig} 
+            eventHandlers={this.state.eventHandlers} 
+            djsConfig={this.state.djsConfig} />;
+  }
+}
+
+```
+
+Hope this helps! Hit me up on Twitter: [@Mineo27](https://twitter.com/Mineo27) if you have any issues/questions.

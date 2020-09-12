@@ -1,0 +1,98 @@
+import { anthonymineo } from '@/authors'
+import image from './card.jpg'
+import {tag} from '@/tags';
+
+export const meta = {
+  draft: false,
+  featured: true,
+  title: "MJML4-Lambda: Convert MJML to HTML",
+  description: "With the latest version of MJML, there came a lot of nice features and upgrades. However, prior to version 4, the NPM module didn't include system API calls like fs, which can't be used in a web browser...",
+  date: "2019-01-13T14:14:00.0Z",
+  updated: "2020-08-27T20:00:00.0Z",
+  authors: [anthonymineo],
+  tags: [tag("AWS"), tag("Node.js")],
+  slug: "/mjml4-lambda/",
+  image,
+  repo: 'https://github.com/amineo/mjml4-lambda'
+}
+
+
+export const config = { amp: 'hybrid' }
+
+<!--excerpt-->
+
+With the latest version of MJML, there came a lot of nice features and upgrades. However, prior to version 4, the NPM module didn't include system API calls like fs, which can't be used in a web browser...
+
+<!--/excerpt-->
+
+
+*Before we start, the folks at MailJet have a beta program for an API that essentially does the same thing as this lambda function.*
+
+With the latest version of MJML, there came a lot of nice features and upgrades. However, prior to version 4, the NPM module didn't include system API calls like `fs`, which can't be used in a web browser. This poses problems if you're integrating an MJML editor into your application and are not using Node.js as your backend. This is where an API or Lambda could provide a solution.
+
+
+**Our function's goal is to mirror the [documented usage](https://mjml.io/documentation/#inside-node-js) of MJML inside Node.js; so we need to accept the MJML and its options.**
+
+**Example Post**
+
+```json
+{
+    "body": {
+        "mjml": "<mj-text>hello</mj-text>",
+        "options": {
+      		"validationLevel": "strict"
+    	}
+    }
+}
+```
+
+### The Lambda
+
+```js
+const mjml2html   = require('mjml');
+const isString = function(val) {
+    return typeof val === 'string' || ((!!val && typeof val === 'object') && Object.prototype.toString.call(val) === '[object String]');
+}
+
+
+exports.handler = async (event, context, callback) => {
+
+    // Log the event details so that they're viewable in the CloudWatch Logs
+    process.stdout.write(JSON.stringify(event));
+
+    // console.log('DATA:', event.body);
+    const data = isString(event.body) ? JSON.parse(event.body) : event.body;
+    const htmlOutput = mjml2html(data.mjml, data.options);
+    
+
+    // onError
+    if(htmlOutput.errors.length){
+        let errorList = JSON.stringify(htmlOutput.errors);
+        process.stderr.write(errorList);
+        return callback( errorList, sendRes(500, htmlOutput.html) );
+    }
+
+    // success 
+    return callback(null, sendRes(htmlOutput.errors.length ? 500 : 200, htmlOutput.html) );
+};
+
+
+
+const sendRes = (status, body) => {
+  var response = {
+    statusCode: status,
+    headers: {
+        "Access-Control-Allow-Origin":"*",
+        "Content-Type":"application/json"
+    },    
+    body: body
+  };
+  return response;
+};
+
+```
+
+## Download
+The code for this lambda is also available on [GitHub](https://github.com/amineo/mjml4-lambda). *Please check there for the latest version just incase this post doesn't get updated.*
+
+Hope this helps! Hit me up on Twitter: [@Mineo27](https://twitter.com/Mineo27) if you have any issues/questions.

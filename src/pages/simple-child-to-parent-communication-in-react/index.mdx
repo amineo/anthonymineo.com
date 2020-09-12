@@ -1,0 +1,101 @@
+import {Highlight, LineBreakA} from '@/components/Editor';
+import { anthonymineo } from '@/authors'
+import image from './card.jpg'
+import {tag} from '@/tags';
+
+export const meta = {
+  draft: false,
+  featured: true,
+  title: "Simple Child to Parent Communication in React",
+  description: "In React, passing data from a parent to its child is pretty simple, it can easily  trickle down through props. But what about the other way around... without using Flux or PubSub?",
+  date: "2018-04-27T15:32:00.0Z",
+  updated: "2020-09-12T20:00:00.0Z",
+  authors: [anthonymineo],
+  tags: [tag("React"), tag("JavaScript")],
+  slug: "/simple-child-to-parent-communication-in-react/",
+  image
+}
+
+export const config = { amp: 'hybrid' }
+
+import Parent from './components/for-post.js'
+
+<!--excerpt-->
+
+In React, passing data from a parent to its child is pretty simple, it can easily  trickle down through props. But what about the other way around... without using **Flux** or **PubSub**?
+
+<!--/excerpt-->
+
+**Last Updated on Saturday, September 12, 2020.** 
+
+
+In React, passing data from a parent to its child is pretty simple, it can easily  trickle down through props. But what about the other way around... without using **Flux** or **PubSub**?
+
+Well, sending data from a child to its parent is simple too. <Highlight>You can actually bubble up your function through props.</Highlight> It just requires a little bit of work to get started.
+
+
+<Parent />
+
+<LineBreakA />
+
+```javascript
+// Our Parent Class
+class Parent extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            data: "Default parent state"
+        };
+        
+        /*
+         Bind our childHandler function to this context
+         that will get called from our Child component
+        */
+        this.childHandler = this.childHandler.bind(this)
+    }
+
+    /*
+     Function that gets called when
+     we bubble up our `return` from Child 
+    */
+    childHandler(dataFromChild) {
+        // log our state before and after we updated it
+        console.log('%cPrevious Parent State: ' + JSON.stringify(this.state), "color:orange");
+        this.setState({
+            data: dataFromChild
+        },() => console.log('Updated Parent State:', this.state));
+    }
+
+    render() {
+        /*
+         Set our childHandler function as a value to a prop that
+         gets passed down to our Child component
+        */
+        return <Child action={this.childHandler} />
+    }
+}
+
+
+
+// Child Class
+class Child extends React.Component {
+    /*
+      Our onClick event will return the function that gets set to our action prop
+      that then gets passed into the Parent's childHandler function.
+    */
+    render() {
+        return <a onClick={() => this.props.action('Set Parent state set from child: ' + Math.floor(Math.random() * 999))}>Update Parent</a>;
+    }
+}
+
+
+
+
+// Render
+ReactDOM.render(
+    <Parent />,
+    document.getElementById('container')
+);
+```
+
+Hope this helps! Hit me up on Twitter: [@Mineo27](https://twitter.com/Mineo27) if you have any issues/questions.

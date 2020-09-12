@@ -1,0 +1,83 @@
+import Image from '@/components/Image';
+import { anthonymineo } from '@/authors'
+import image from './card.jpg'
+import {tag} from '@/tags';
+
+export const meta = {
+  draft: false,
+  featured: false,
+  title: "Docker Healthcheck for your Node.js App",
+  description: "Your container is running... but is it working? You should have health checks defined for all your containers. The HEALTHCHECK instruction tells Docker how to test a container to make sure it's working properly.",
+  date: "2018-09-13T16:54:00.0Z",
+  updated: "2020-08-27T20:00:00.0Z",
+  authors: [anthonymineo],
+  tags: [tag("Docker"), tag("Node.js")],
+  slug: "/docker-healthcheck-for-your-node-js-app/",
+  image
+}
+
+export const config = { amp: 'hybrid' }
+
+<!--excerpt-->
+
+Your container is running... but is it working? You should have health checks defined for all your containers. The **HEALTHCHECK** instruction tells Docker how to test a container to make sure it's working properly.
+
+<!--/excerpt-->
+
+
+
+<Image
+  src="/content/images/2018/09/docker-nodejs-healthcheck.png"
+  alt="Docker Healthcheck for your Node.js App"
+  width="1285"
+  height="187"
+/>
+
+
+Your container is running... but is it working? You should have health checks defined for all your containers. 
+
+The [HEALTHCHECK](https://docs.docker.com/engine/reference/builder/#healthcheck) instruction tells Docker how to test a container to make sure it's working properly. As your infrastructure becomes increasingly complex, health checks become even more important.
+
+
+## Writing the HEALTHCHECK
+Creating a health check is really easy and since we're already using Node for our application why not use it to write our health check as well?
+
+
+### healthcheck.js
+```js
+const http = require('http');
+const options = {
+    host: '0.0.0.0',
+    port: 80,
+    timeout: 2000
+};
+
+const healthCheck = http.request(options, (res) => {
+    console.log(`HEALTHCHECK STATUS: ${res.statusCode}`);
+    if (res.statusCode == 200) {
+        process.exit(0);
+    }
+    else {
+        process.exit(1);
+    }
+});
+
+healthCheck.on('error', function (err) {
+    console.error('ERROR');
+    process.exit(1);
+});
+
+healthCheck.end();
+```
+
+Looking at the code, you can see it's pretty straightforward. Obviously, you'll need to customize the `host` and `port` to fit your needs. The `healthCheck` function simply makes a request to the host and if the host does not return a status code of `200` something is broken.
+
+### Dockerfile
+```docker
+HEALTHCHECK --interval=10s --timeout=2s --start-period=15s \  
+    CMD node /healthcheck.js
+```
+
+Finally, enable the health check by adding the HEALTHCHECK instruction to your `Dockerfile`. Notice the command that runs `healthcheck.js`. Update that path accordingly and you should be set!
+
+Hope this helps! Hit me up on Twitter: [@Mineo27](https://twitter.com/Mineo27) if you have any issues/questions.

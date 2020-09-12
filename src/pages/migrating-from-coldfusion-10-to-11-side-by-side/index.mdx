@@ -1,0 +1,127 @@
+import {Highlight} from '@/components/Editor';
+import Image from '@/components/Image';
+
+import { anthonymineo } from '@/authors'
+import image from './card.jpg'
+import {tag} from '@/tags';
+
+
+export const meta = {
+  draft: false,
+  featured: false,
+  title: "Migrating From ColdFusion 10 to 11 Side-by-Side",
+  description: "Earlier today we migrated our dev/staging server from ColdFusion 10 to 11 without using CF's built-in server. We wanted to do this as a side-by-side migration to test and flesh-out the process before we actually made the switch on our production servers. Here's how it went.",
+  date: "2016-03-25T19:36:00.0Z",
+  updated: "2020-08-27T20:00:00.0Z",
+  authors: [anthonymineo],
+  tags: [tag("ColdFusion"), tag("IIS")],
+  slug: "/migrating-from-coldfusion-10-to-11-side-by-side/",
+  image,
+}
+
+
+export const config = { amp: 'hybrid' }
+
+<!--excerpt-->
+
+Earlier today we migrated our dev/staging server from ColdFusion 10 to 11 without using CF's built-in server. We wanted to do this as a side-by-side migration to test and flesh-out the process before we actually made the switch on our production servers. Here's how it went.
+
+<!--/excerpt-->
+
+
+Earlier today we migrated our dev/staging server from ColdFusion 10 to 11 without using CF's built-in server. We wanted to do this as a side-by-side migration to test and flesh-out the process before we actually made the switch on our production servers. Here's how it went.
+
+Before we began the CF11 installation we setup a temporary site in IIS just for our CF11 Admin.
+
+During the install we chose to install it **only** on the site we had just setup so it wouldn't affect our other ColdFusion 10 sites.
+
+After ColdFusion 11 installed, we tried to load the CF Admin and IIS eagerly presented us with a lovely 500 error. Because ya know... everything always goes smoothly... *Said no one ever.*
+
+<Image
+  src="/content/images/2018/02/iis-cf-500-1.gif"
+  alt="IIS 500 Error - IsapiModule - isapi_redirect.dll"
+  width="1038"
+  height="557"
+/>
+
+
+**Classic.** *Now, how do we fix it?*  
+
+First, we attempted to run CF11's **Web Connector tool** to see if removing and adding it back fixes it. *No dice*.
+
+Then, we took a look at the **handler mappings** in IIS for our CF11 Admin site.
+<Highlight>Ah ha!</Highlight> **They were pointing to CF10's `isapi_redirect.dll`**. This is obviously wrong as they should be pointing to CF11's. 
+
+So, we updated them all to point to CF11 and because we had changed them on the site specific level they will not affect any of our other sites. Win!
+
+<Image
+  src="/content/images/2018/02/iis-cf-handler-maps.gif"
+  alt="IIS Handler Mappings"
+  width="646"
+  height="400"
+/>
+
+
+## Coldfusion's (default) IIS Handler Mappings  
+* `cfcHandler`
+* `cfmHandler`
+* `cfmlHandler`
+* `cfrHandler`
+
+After updating the mappings, there was still one more setting that had to be changed. **The ISAPI filters**.
+
+## ISAPI Filters
+
+<Image
+  src="/content/images/2018/02/iis-cfadmin-site-isapi-filters.gif"
+  alt="ISAPI Filters - The last piece of the puzzle"
+  width="690"
+  height="535"
+/>
+
+
+Opening up the ISAPI Filters config we saw that the `tomcat` executable was pointing to CF10 like the handler mappings were previously.
+
+IIS wouldn't let us change the *tomcat executable path* via the GUI so we had to manually update the web.config [^1] file for our CF11-Admin site.
+
+```markup
+<configuration>
+    <system.webServer>
+
+       <isapiFilters>
+         <remove name="tomcat" />
+         <filter
+            name="tomcat"
+            enabled="true"
+            path="C:\ColdFusion11\config\wsconfig\1\isapi_redirect.dll" />
+       </isapiFilters>
+
+     ...rest of your web.config...
+
+    </system.webServer>
+</configuration>
+```
+
+By adding the `<isapiFilters>` node we can now override our global IIS ISAPI Filters.
+`<remove name="tomcat" />` tells IIS to remove the `tomcat` binding so we can then add our own `tomcat` filter with CF11's path.
+
+After we made that update we took a look at our ISAPI Filter in IIS just to make sure all was good.
+
+<Image
+  src="/content/images/2018/02/iis-cfadmin-isapi-filters-1.gif"
+  alt="Updated tomcat executable"
+  width="515"
+  height="515"
+/>
+
+
+Nice! Tomcat is pointing to our CF11's connector and our CF11 admin is loading!
+
+We can now configure CF11 before we make the final cutover. 
+
+### TLDR;
+* CF11 Site: Update CF's IIS Hander Mappings to point to CF11's connector
+* CF11 Site: Update Tomcat's ISAPI Filter via web.config to point to CF11's connector
+
+
+^1: [IIS web.config ISAPI Filters](https://www.iis.net/configreference/system.webserver/isapifilters)

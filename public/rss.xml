@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title><![CDATA[AnthonyMineo.com - Blog]]></title>
+        <description><![CDATA[AnthonyMineo.com - Blog]]></description>
+        <link>https://anthonymineo.com</link>
+        <generator>RSS for Node</generator>
+        <lastBuildDate>Fri, 28 Aug 2020 19:45:34 GMT</lastBuildDate>
+        <atom:link href="https://anthonymineo.com/rss.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[Automatically clear that bash history!]]></title>
+            <description><![CDATA[Bash stores a history of commands that were previously executed by a user in plain text (.bash_history). As you probably realize, this becomes a security issue when you're running commands that contain sensitive information]]></description>
+            <link>https://anthonymineo.com/clear-that-bash-history/</link>
+            <guid isPermaLink="false">/clear-that-bash-history</guid>
+            <pubDate>Sun, 31 Mar 2019 12:10:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+        <item>
+            <title><![CDATA[MJML4-Lambda: Convert MJML to HTML]]></title>
+            <description><![CDATA[With the latest version of MJML, there came a lot of nice features and upgrades. However, prior to version 4, the NPM module didn't include system API calls like fs, which can't be used in a web browser...]]></description>
+            <link>https://anthonymineo.com/mjml4-lambda/</link>
+            <guid isPermaLink="false">/mjml4-lambda</guid>
+            <pubDate>Sun, 13 Jan 2019 14:14:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+        <item>
+            <title><![CDATA[Docker Healthcheck for your Node.js App]]></title>
+            <description><![CDATA[Your container is running... but is it working? You should have health checks defined for all your containers. The HEALTHCHECK instruction tells Docker how to test a container to make sure it's working properly.]]></description>
+            <link>https://anthonymineo.com/docker-healthcheck-for-your-node-js-app/</link>
+            <guid isPermaLink="false">/docker-healthcheck-for-your-node-js-app</guid>
+            <pubDate>Thu, 13 Sep 2018 16:54:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+        <item>
+            <title><![CDATA[Rotating Your Docker Secrets Can Be Easy, If You Plan For It]]></title>
+            <description><![CDATA[In your docker-compose file, defining a secret's source and target let you easily rotate your secrets without changing any application code. You need to standardize your naming conventions, however.]]></description>
+            <link>https://anthonymineo.com/rotating-your-docker-secrets-can-be-easy-if-you-plan-for-it/</link>
+            <guid isPermaLink="false">/rotating-your-docker-secrets-can-be-easy-if-you-plan-for-it</guid>
+            <pubDate>Thu, 23 Aug 2018 21:10:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+        <item>
+            <title><![CDATA[Simple Child to Parent Communication in React]]></title>
+            <description><![CDATA[In React, passing data from a parent to its child is pretty simple, it can easily  trickle down through props. But what about the other way around... without using Flux or PubSub?]]></description>
+            <link>https://anthonymineo.com/simple-child-to-parent-communication-in-react/</link>
+            <guid isPermaLink="false">/simple-child-to-parent-communication-in-react</guid>
+            <pubDate>Fri, 27 Apr 2018 15:32:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+        <item>
+            <title><![CDATA[Hotel - A Process Manager for Local Domains]]></title>
+            <description><![CDATA[Hotel is a simple process manager for developers that allows you to start your apps from a browser and even access them using .localhost domains. It practically works with all servers and even supports https...]]></description>
+            <link>https://anthonymineo.com/hotel-process-manager-for-local-development/</link>
+            <guid isPermaLink="false">/hotel-process-manager-for-local-development</guid>
+            <pubDate>Tue, 13 Mar 2018 20:28:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+        <item>
+            <title><![CDATA[Batch File Renaming in Node from a JSON File]]></title>
+            <description><![CDATA[So, let's say you have a few hundred ${guid}.zip or other files that uniformly match up to a data source but you need to rename them to something a little more friendly...]]></description>
+            <link>https://anthonymineo.com/node-batch-file-rename-from-json/</link>
+            <guid isPermaLink="false">/node-batch-file-rename-from-json</guid>
+            <pubDate>Thu, 08 Mar 2018 16:16:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+        <item>
+            <title><![CDATA[AdonisJS: ToDo App]]></title>
+            <description><![CDATA[The purpose of creating this ToDo app was to get more comfortable with Node and the Adonis framework. This isn't a walk-through on how to create a ToDo App, but rather the bits-and-pieces of Adonis that makeup the app.]]></description>
+            <link>https://anthonymineo.com/adonisjs-todo-app/</link>
+            <guid isPermaLink="false">/adonisjs-todo-app</guid>
+            <pubDate>Sun, 23 Apr 2017 20:00:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+        <item>
+            <title><![CDATA[Trace Elements Plugin for Redactor]]></title>
+            <description><![CDATA[Uncover any unnecessary tags generated by the editor. This plugin adds the ability to toggle a trace on common parent block-level elements with an outline and their element name. The purpose for creating this plugin was so that it becomes a little clearer on what my WYSIWYG is doing.]]></description>
+            <link>https://anthonymineo.com/trace-elements-plugin-for-redactor/</link>
+            <guid isPermaLink="false">/trace-elements-plugin-for-redactor</guid>
+            <pubDate>Sun, 02 Apr 2017 19:56:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+        <item>
+            <title><![CDATA[Updating Ghost to 0.10.1 from 0.6.4, Node 0.12 to 4.5 LTS & NPM]]></title>
+            <description><![CDATA[The development of Ghost has been moving pretty fast. My version of Ghost was way out of date and the version of Node I was running wasn't even LTS. My blog was pretty much just left in the dust...]]></description>
+            <link>https://anthonymineo.com/updating-ghost-to-0-10-1-from-0-6-4-node-0-12-to-4-5-lts-npm/</link>
+            <guid isPermaLink="false">/updating-ghost-to-0-10-1-from-0-6-4-node-0-12-to-4-5-lts-npm</guid>
+            <pubDate>Fri, 09 Sep 2016 19:53:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+        <item>
+            <title><![CDATA[Communication Between Independent Components in React using PubSubJS]]></title>
+            <description><![CDATA[During my adventures in learning React, I came across a particular roadblock with independent component communication. I understand how 'parent-child components' talk. The React doc's explain that pretty well. However, a place that could use an improvement is explaining with examples on how to make independent components communicate.]]></description>
+            <link>https://anthonymineo.com/communication-between-independent-components-in-react-using-pubsubjs/</link>
+            <guid isPermaLink="false">/communication-between-independent-components-in-react-using-pubsubjs</guid>
+            <pubDate>Sun, 17 Jul 2016 19:51:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+        <item>
+            <title><![CDATA[Bootstrap 4 PSD Grid & GuideGuide Preset]]></title>
+            <description><![CDATA[I created a simple boilerplate for Bootstrap 4's Grid with the awesome GuideGuide plugin in Photoshop.]]></description>
+            <link>https://anthonymineo.com/bootstrap-4-psd-grid-guideguide-preset/</link>
+            <guid isPermaLink="false">/bootstrap-4-psd-grid-guideguide-preset</guid>
+            <pubDate>Thu, 16 Jun 2016 19:44:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+        <item>
+            <title><![CDATA[Migrating From ColdFusion 10 to 11 Side-by-Side]]></title>
+            <description><![CDATA[Earlier today we migrated our dev/staging server from ColdFusion 10 to 11 without using CF's built-in server. We wanted to do this as a side-by-side migration to test and flesh-out the process before we actually made the switch on our production servers. Here's how it went.]]></description>
+            <link>https://anthonymineo.com/migrating-from-coldfusion-10-to-11-side-by-side/</link>
+            <guid isPermaLink="false">/migrating-from-coldfusion-10-to-11-side-by-side</guid>
+            <pubDate>Fri, 25 Mar 2016 19:36:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+        <item>
+            <title><![CDATA[Getting Started with Gulp]]></title>
+            <description><![CDATA[A simple approach to start automating with Gulp! Gulp is a robust javascript automation tool that uses a code-over-configuration, streaming build system that's powered by Node.]]></description>
+            <link>https://anthonymineo.com/getting-started-with-gulp/</link>
+            <guid isPermaLink="false">/getting-started-with-gulp</guid>
+            <pubDate>Tue, 15 Dec 2015 12:31:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+    </channel>
+</rss>

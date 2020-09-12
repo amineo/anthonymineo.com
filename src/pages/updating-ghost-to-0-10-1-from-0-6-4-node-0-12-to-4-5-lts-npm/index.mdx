@@ -1,0 +1,164 @@
+import {Highlight} from '@/components/Editor';
+import { anthonymineo } from '@/authors'
+import image from './card.jpg'
+import {tag} from '@/tags';
+
+
+export const meta = {
+  draft: false,
+  featured: false,
+  title: "Updating Ghost to 0.10.1 from 0.6.4, Node 0.12 to 4.5 LTS & NPM",
+  description: "The development of Ghost has been moving pretty fast. My version of Ghost was way out of date and the version of Node I was running wasn't even LTS. My blog was pretty much just left in the dust...",
+  date: "2016-09-09T19:53:00.0Z",
+  updated: "2020-08-27T20:00:00.0Z",
+  authors: [anthonymineo],
+  tags: [tag("DevOps")],
+  slug: "/updating-ghost-to-0-10-1-from-0-6-4-node-0-12-to-4-5-lts-npm/",
+  image
+}
+
+
+export const config = { amp: 'hybrid' }
+
+<!--excerpt-->
+
+The development of Ghost has been moving pretty fast. My version of Ghost was way out of date and the version of Node I was running wasn't even LTS. My blog was pretty much just left in the dust...
+
+<!--/excerpt-->
+
+
+
+The development of [Ghost](https://github.com/TryGhost/Ghost/releases) has been moving pretty fast. My version of Ghost was way out of date and the version of Node I was running wasn't even LTS. *My blog was pretty much just left in the dust...* 
+
+This year has been full of life changing events and I haven't been able to find the time to sit down and give this blog as much love as I'd like. **Anyways, now is the time to make time**. So, my first order of business was to get this baby up to date!
+
+
+<table>
+  <thead>
+    <tr>
+      <th><small>Migrated</small></th>
+      <th><small>From</small></th>
+      <th><small>To</small></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Ghost</td><td><code>0.6.4</code></td><td><code>0.10.1</code></td></tr>
+    <tr><td>Node</td><td><code>0.12</code></td><td><code>4.5 LTS</code></td></tr>
+    <tr><td>NPM</td><td><code>2.11</code></td><td><code>3.10.6</code></td></tr>
+  </tbody>
+</table>
+
+
+Before I attempted to do anything, I read through Ghost's [release logs](https://github.com/TryGhost/Ghost/releases) for any major changes to it's prerequisites or dependencies. As of Ghost <small>v</small>0.9.0, they recommend Node <small>v</small>4 for running Ghost... I was running 0.12.
+
+---
+
+<Highlight>**PSA:** Make sure you *backup*/*snapshot* before you change anything so that if you run into an issue you can safely restore. :)</Highlight>
+
+---
+
+## Updating Ghost
+The good folks at Ghost put together a nice [upgrade guide](http://support.ghost.org/how-to-upgrade/) that documents the procedure pretty thoroughly. It might also be good idea to bookmark that link as they do keep it fairly up-to-date with each release.
+
+
+```bash
+## My TL;DR modified from their guide
+
+## Example path for Ghost's install
+# /var/www/ghost
+
+cd /var/www/
+
+## Download the latest version of Ghost:
+curl -LOk https://ghost.org/zip/ghost-latest.zip
+
+## Unzip to a temp directory (/var/www/ghost-temp):
+unzip ghost-latest.zip -d ghost-temp
+
+## Change directory into your current ghost install:
+cd ghost  # /var/www/ghost
+
+## Remove the core directoy:
+rm -rf core
+
+## Change back to your ghost download (ghost-temp)
+cd /var/www/ghost-temp/
+
+## Copy the new core directory to your Ghost install:
+cp -R core /var/www/ghost
+
+## Copy the other key files to your Ghost install directory:
+cp index.js *.json /var/www/ghost
+
+## (optional) Update Casper by copying the casper folder:
+cp -R content/themes/casper /var/www/ghost/content/themes
+
+## Change back to your ghost install directory:
+cd /var/www/ghost
+
+## (optional) Update permissions:
+chown -R ghost:ghost *
+
+
+## Do not update dependencies yet!
+## It will fail because Node & NPM have not yet been updated
+
+```
+
+
+
+##Update Node from 0.12 to 4.5 LTS
+Updating Node wasn't difficult. NPM has a neat package called "**[n](https://www.npmjs.com/package/n)**" which allows you to interactively manage your Node versions with a few terminal commands.
+
+```bash
+## Clear npm's cache
+sudo npm cache clean -f
+
+## Install n globally
+sudo npm install -g n
+
+## Let n know what version of Node you want running.
+## In our case, we want LTS (4.5.0)
+n lts
+
+## Be sure to checkout n's docs for more info on usage:
+## https://www.npmjs.com/package/n
+
+## Verify that our Node version is correct
+node -v
+## v4.5.0
+```
+
+
+
+## Finally, Update NPM & Ghost's Dependencies
+Initially, after updating Node, I tried running `npm install --production` and got a strange error.
+```bash
+npm WARN cannot run in wd ghost@0.10.1 node core/server/utils/npm/preinstall.js (wd=/var/www/ghost)
+```
+Updating NPM did the trick!
+```bash
+## Update NPM with... NPM!
+npm install npm -g
+
+## Update Ghost's deps
+npm install --production
+```
+
+
+
+### Overcoming My Last Set of Issues
+#### NPM KILL
+While `npm install` did start to run, it would eventually stop before it fully completed and scream <Highlight>NPM KILL!</Highlight> at me...
+
+So... why the heck is it timing out and killing the install task?
+*Well,* before I started I created a "Cloned Droplet" in DigitalOcean with a potato instance (512GB/1CPU) for my staging server to test off of. As it turns out, this was my issue. NPM install was overloading my micro instance. After I increased its resources to 2GB/2CPU it went off without a hitch. 
+
+#### 502 Bad Gateway after Ghost restart
+Trying to start ghost with `npm start --production` resulted in a 502 error. Somewhere my permissions got crossed but I was able to fix it by running:
+```bash
+chown -R ghost:ghost ghost/*
+```
+
+
+*All systems go!*

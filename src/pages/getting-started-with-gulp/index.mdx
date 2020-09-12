@@ -1,0 +1,601 @@
+import {Highlight} from '@/components/Editor';
+import { anthonymineo } from '@/authors'
+import image from './card.jpg'
+import {tag} from '@/tags';
+
+export const meta = {
+  draft: false,
+  featured: false,
+  title: "Getting Started with Gulp",
+  description: "A simple approach to start automating with Gulp! Gulp is a robust javascript automation tool that uses a code-over-configuration, streaming build system that's powered by Node.",
+  date: "2015-12-15T12:31:00.0Z",
+  updated: "2020-08-27T20:00:00.0Z",
+  authors: [anthonymineo],
+  tags: [tag("Gulp"), tag("JavaScript")],
+  slug: "/getting-started-with-gulp/",
+  image,
+  repo: "https://github.com/amineo/blog-getting-started-with-gulp"
+}
+
+export const config = { amp: 'hybrid' }
+
+<!--excerpt-->
+
+**A simple approach to start automating with gulp!**
+
+Gulp is a robust javascript automation tool that uses a code-over-configuration, streaming build system that's powered by Node.
+
+<!--/excerpt-->
+
+
+**A simple approach to start automating with gulp!**
+
+Gulp is a robust javascript automation tool that uses a code-over-configuration, streaming build system that's powered by Node.
+
+---
+#### What we're going to cover:
+
+* [Installing Node](#installing-node)
+* [Quick overview of the CLI](#step-2-love-thy-cli---a-very-very-brief-overview)
+* [Getting your project ready](#step-3-getting-your-project-ready)
+* [Installing & Setting Up Gulp](#step-4-installing--setting-up-gulp)
+* [Installing Plugins](#step-5-installing-plugins)
+* [Make Gulp watch for file changes and trigger tasks](#step-6-writing-gulp-tasks---gulpfilejs)
+* [Gulp Watch](#step-7-gulp-watch)
+* [Gulp Default Task](#step-8-the-gulp-default-task)
+* [Setup BrowserSync](#step-9-gulp--browsersync)
+
+---
+
+## <span id="installing-node">Step 1 - Install Node</span>
+<Highlight>If you already have Node you can skip this step :)</Highlight>
+
+First and foremost, we need to install Node.js.   
+
+Visit [nodejs.org](https://nodejs.org) and click that big, green, you-cant-miss-me "Download for ___" button.
+
+**At the time of this writing** - You're presented with 2 options. v4.x LTS (Long-term support) or v5.x Current. Since we're working with tooling we want the latest and greatest. However, if you plan on running a HTTP server with Node I would recommend the LTS version as it'll be stable and up-to-date with critical bugs and security fixes.
+
+After you download and run the installer, Node and NPM ([Node Package Manager](https://www.npmjs.com/)) will be installed.
+
+---
+## <span id="step-2-love-thy-cli---a-very-very-brief-overview">Step 2: Love thy CLI - a very, very brief overview</span>
+<Highlight>If you're already familiar with using a command-line interface you may skip this step</Highlight>
+
+So... you may or may not already know this but your computer ships with a command-line interface. On Mac/Unix its *Terminal* on Windows its *Command Prompt/CMD*.
+
+**Don't be intimidated. You're the boss of it!**
+
+Since we just installed Node. Lets use our CLI and ask it what version of Node and NPM we're running.   
+
+*Bonus - This will also serve as a test to make sure Node has installed correctly.*
+
+Fire up the CLI and type *(without the $ sign)*:
+```bash
+$ node -v
+```
+Like a dog that happily fetches a bone, the CLI will echo back to you your installed Node version.
+
+What the *hell* just actually happened?
+Well, when you entered the command `node -v` the CLI ran Node and passed in the `-v` option which then asks Node to return it's version.
+
+Lets check our NPM version now.
+```bash
+$ npm -v
+```
+Starting to get the hang of this thing? Good!
+
+There are a lot of other commands that come in handy such as `ls` in Unix or `dir` in Windows if you wanted to list the contents of that directory.
+
+To change a directory you can run: 
+```bash
+$ cd path/to/new/directory
+```
+We can keep diving deeper into CLI commands but I'll reserve that for a future post. ;) We're here to talk about Gulp.
+
+>If you're interested in learning more about using the CLI:  
+[Terminal - Tutsplus](http://computers.tutsplus.com/tutorials/40-terminal-tips-and-tricks-you-never-thought-you-needed--mac-51192)   
+[CMD - dosprompt](http://dosprompt.info/basics.asp)
+
+---
+
+## <span id="step-3-getting-your-project-ready">Step 3: Getting Your Project Ready</span>
+
+<Highlight>If you already have a package.json file, you may skip this step</Highlight>
+
+To start, we need to create a `package.json` file.
+
+Fire up your terminal/cmd and `cd` to your project directory.
+
+Once you're in your project's directory. We can create a `package.json` file via entering the following command:
+
+```bash
+$ npm init
+```
+A wizard will start walking you through creating your package.json file. Don't worry if you don't know the entry point, test commands, etc.. Just press enter, enter, enter. We'll be editing this later anyways. :) 
+
+While it's not important for what we're doing in this tutorial, I do recommend you read up on the [package.json docs](https://docs.npmjs.com/files/package.json).
+
+You can also just run `$ npm init -f` and it will automatically spit out a package.json with the defaults. 
+
+I removed the bloat from my `package.json` so it's just *name, version & description*.
+```json
+package.json
+=============
+{
+  "name": "blog-getting-started-with-gulp",
+  "version": "1.0.0",
+  "description": "Getting started with Gulp"
+}
+```
+
+---
+
+## <span id="step-4-installing--setting-up-gulp">Step 4: Installing & Setting up Gulp</span>
+
+<Highlight>Finally, the moment you've been waiting for...</Highlight>
+
+As per the [Gulp Official Docs](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md), we're going to begin by installing Gulp globally first by running the command below.
+```bash
+$ npm install gulp -g
+```
+Notice we passed in the `-g` option. This tells NPM to install it as a global package. Installing a package globally allows you to access it via the CLI anywhere.
+
+Generally speaking, you shouldn't install dependancies globally as  it makes deployments a royal pain in the ass. Stay tuned, you'll see why shortly.
+ 
+Now that we have Gulp installed globally, we should also install it as a dev dependency for our project. *Make sure your CLI is in your project's directory first.*
+
+We're going to run the same command as before but this time using the `--save-dev` option. 
+
+```bash
+$ npm install gulp --save-dev
+```
+
+**Oh crap, a bunch of things just happened!**   
+*All good things actually :)*
+
+A new folder called **node_modules** was created in your projects directory and inside node_modules there now resides a *gulp* folder. 
+
+Open/reload your package.json file. See anything new?
+```json
+"devDependencies": {
+   "gulp": "^3.9.0"
+}
+```
+Pretty cool huh? This is the spot where all of our projects dependencies will be referenced.
+
+##### Next, we create our gulpfile.js
+
+Create a new `gulpfile.js` in your projects directory *(next to your package.json)*.
+
+This is where we can start writing our automation like a boss... but before we do we need to define gulp and install plugins for the tasks we want to automate.
+
+Include gulp in your `gulpfile.js`:
+```javascript
+// Include gulp
+var gulp = require('gulp');
+``` 
+
+It's important to know that Gulp only has ~~&nbsp;&nbsp;5&nbsp;&nbsp;~~&nbsp; 4 API methods.
+
+- [task](https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulptaskname--deps--fn)
+- [watch](https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpwatchglob--opts-tasks-or-gulpwatchglob--opts-cb)
+- [src](https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpsrcglobs-options)
+- [dest](https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpdestpath-options)
+- *gulp.run has been deprecated* 
+
+These 4 methods are all you'll need to write your tasks. *More on this when we actually start writing our tasks.*
+
+---
+
+## <span id="step-5-installing-plugins">Step 5: Installing plugins</span>
+
+We're going to install the following plugins as devDependencies (`--save-dev`): 
+
+- [gulp-cached](https://www.npmjs.com/package/gulp-cached)
+- [gulp-changed](https://www.npmjs.com/package/gulp-changed)
+- [gulp-concat](https://www.npmjs.com/package/gulp-concat)
+- [gulp-jshint](https://www.npmjs.com/package/gulp-jshint)
+- [gulp-less](https://www.npmjs.com/package/gulp-less)
+- [gulp-uglify](https://www.npmjs.com/package/gulp-uglify)
+- [gulp-util](https://www.npmjs.com/package/gulp-util)
+- [jshint-stylish](https://www.npmjs.com/package/jshint-stylish)
+- [less-plugin-autoprefix](https://www.npmjs.com/package/less-plugin-autoprefix)
+- [less-plugin-clean-css](https://www.npmjs.com/package/less-plugin-clean-css)
+- [gulp-rename](https://www.npmjs.com/package/gulp-rename)
+- [gulp-replace](https://www.npmjs.com/package/gulp-replace)
+- [gulp-sass](https://www.npmjs.com/package/gulp-sass)
+- [gulp-autoprefixer](https://www.npmjs.com/package/gulp-autoprefixer)
+```bash
+$ npm install gulp-cached gulp-changed gulp-concat gulp-jshint gulp-less gulp-uglify gulp-util jshint-stylish less-plugin-autoprefix less-plugin-clean-css gulp-rename gulp-replace gulp-sass gulp-autoprefixer --save-dev 
+```   
+
+
+If all went well your `package.json` should now look something like this:   
+
+```json
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-cached": "^1.1.0",
+    "gulp-changed": "^1.3.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-less": "^3.0.5",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
+    "gulp-sass": "^2.3.1",
+    "gulp-uglify": "^1.5.3",
+    "gulp-util": "^3.0.7",
+    "jshint-stylish": "^2.2.0",
+    "less-plugin-autoprefix": "^1.5.1",
+    "less-plugin-clean-css": "^1.5.1"
+  }
+```
+
+You can find more plugins on https://gulpjs.com/plugins or on [npmjs.com](https://www.npmjs.com/search?q=gulp). The plugins on npm are usually prefixed with *gulp-*
+
+
+##### Now, let's define our plugins in gulpfile.js
+
+```javascript
+// Include gulp & plugins
+var gulp = require('gulp'),
+    gutil = require('gulp-util'),
+    uglify = require('gulp-uglify'),
+    concat = require('gulp-concat'),
+    rename = require('gulp-rename'),
+    replace = require('gulp-replace'),
+    cache = require('gulp-cached'),
+    changed = require('gulp-changed');
+    
+// sass related
+var sass = require('gulp-sass'),
+    autoprefixer = require('gulp-autoprefixer');
+    
+// less related
+var less = require('gulp-less'),
+    LessPluginCleanCSS = require('less-plugin-clean-css'),
+    LessPluginAutoPrefix = require('less-plugin-autoprefix'),
+    lessCleanCSS = new LessPluginCleanCSS({ advanced: false, compatibility:'ie8,+selectors.ie7Hack'}),
+    lessAutoPrefix = new LessPluginAutoPrefix({ browsers: ["last 4 versions"], remove:false });
+``` 
+
+<br />
+
+
+## <span id="step-6-writing-gulp-tasks---gulpfilejs">Step 6: Writing Gulp Tasks - *gulpfile.js*</span>
+We're going to make Gulp uglify our JS, compile our LESS/SASS into CSS, auto-prefix the CSS output, and then minify it. 
+
+To make our lives easier, we'll also configure Gulp to watch for any file changes and then fire off specific tasks.
+
+I like to store the project's `dist` (where your scripts/css/* get rendered to) and `src` (where our source files live) in a variable so we can reference it easily and if the paths happen to change for whatever reason it's in one spot. :)
+
+Since we can just write normal JS in our `gulpfile.js`, create an object to store your paths.
+
+
+```javascript
+/**
+* You can make this a lot more elaborate,
+* but for examples sake we're going to keep it simple
+**/ 
+
+var projectPath = {
+    src: 'assets/src/',   // projectPath.src
+    dist: 'assets/dist/'  // projectPath.dist
+}; 
+```
+
+
+---
+
+##### Defining our task to minify our scripts 
+
+
+```bash
+$ gulp scripts
+```
+
+```javascript
+/** 
+  * Compile JS 
+**/
+
+gulp.task('scripts', function() {
+  return gulp.src([projectPath.src + 'js/*.js', '!gulpfile.js', '!**/*.min.js'])
+    .pipe(cache('uglifing'))
+    .pipe(uglify())
+    .pipe(rename(function(path){
+        path.extname = '.min.js';
+     }))
+    .pipe(changed(projectPath.dist + 'js'))
+    .pipe(gulp.dest(projectPath.dist + 'js'));
+});
+```
+
+Let's break this down a bit. 
+
+
+##### gulp.task
+```javascript
+/** For the official docs on gulp.task
+  * [gulp.task]{@link https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulptaskname--deps--fn}
+  * 
+  * Usage: gulp.task(name [, deps] [, fn])
+**/
+
+gulp.task('scripts', function() {
+   // rest our task code
+});
+```
+
+We define tasks in Gulp by using the `gulp.task` API. In our case, our task name is `'scripts'` which allows us to fire off commands in terminal/cmd with `$ gulp scripts`.
+
+
+---
+
+##### gulp.src
+
+```javascript
+/** For official docs on gulp.src
+  * [gulp.src]{@link https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpsrcglobs-options}
+  * 
+  * Usage: gulp.src(globs[, options])
+**/
+
+/** TIP: Because we set projectPath as an object,
+  *      we can simply reference it in our paths
+  *      projectPath.src + 'js/*.js  ->  'assets/src/js/*.js'
+**/
+
+// ...
+  return gulp.src([projectPath.src + 'js/*.js', '!gulpfile.js', '!**/*.min.js'])
+// ...
+```
+
+**Notice the `return` before `gulp.src`.**  
+The `return` indicates that the task is async and `gulp.src()` returns a stream, so it's async. Without it the task system wouldn't know when it finished. If you're interested, checkout the [Gulp Docs: Async Task Support](https://github.com/gulpjs/gulp/blob/master/docs/API.md#async-task-support).
+
+
+The `gulp.src` API is where we define the source file(s) for our task. **gulp.src** can take in single file paths to glob patterns, such as `/**/*.js` to match multiple files or as `!**/*.min.js` to exclude files with the **!** prefix.
+
+
+---
+
+##### .pipe 
+Gulp makes use of Node's .pipe() for streaming data that needs to be processed. In essence, we are pushing our gulp.src files as streams of data through our .pipes() to our gulp plugins or other gulp API methods like gulp.dest(). Pipes are chainable so you can add as many plugins as you need.
+
+```javascript
+    
+    // pipe data to `gulp-cache`
+    .pipe( cache('uglifing') )
+
+    // pipe data to `gulp-uglify`
+    .pipe( uglify() )
+
+    // pipe data to `gulp-rename`
+    .pipe( rename(function(path){
+        path.extname = '.min.js';
+     }) )
+
+    // pipe data to `gulp-changed`
+    .pipe( changed(projectPath.dist + 'js') )
+
+    // pipe data to `gulp.dest`
+    // gulp.dest is used for our final output
+    .pipe( gulp.dest(projectPath.dist + 'js') );
+
+```
+Each plugin has their own set of options so it's important to checkout each plugins documentation on usage. Earlier in step 5, I included links to each plugins package on NPM.
+
+
+If you want to read more on Node Streams be sure to checkout the [Node Docs: stream.pipe](https://nodejs.org/api/stream.html#stream_event_pipe). 
+
+##### .pipe( gulp.dest() )
+Our last `.pipe` is passing our stream to `gulp.dest()` which writes our final output.
+
+```javascript
+/** For official docs on gulp.dest
+  * [gulp.dest]{@link https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpdestpath-options}
+  * 
+  * Usage: gulp.dest(path[, options])
+**/
+```
+
+---
+
+#### CSS Preprocessors
+
+Moving onto our CSS preprocessors!
+We're going to setup a simple task to take our main.less/main.scss file and their includes compiled down to a single css file that's minified with vendor prefixes.
+
+###### Less
+```bash
+$ gulp less
+```
+```js
+gulp.task('less', function() {
+  return gulp.src(projectPath.src + 'less/main.less')
+    .pipe(less({
+      plugins: [lessAutoPrefix, lessCleanCSS]
+    }))
+    .pipe(rename(function(path){
+      path.extname = '.less.css';
+    }))
+    .pipe(gulp.dest(projectPath.dist + '/css'))
+});
+```
+
+<br/>
+Let's dissect this a little bit.
+
+```js
+// The first piped action we need to preform is 
+// for processing our LESS into CSS.
+.pipe(less({
+  /** Notice that the gulp-less plugin takes additional
+    * plugins that process our LESS stream even further.
+    * Here are the LESS plugins we defined earlier
+    * at the top of our gulpfile.js
+    **/
+
+  // LessPluginCleanCSS = require('less-plugin-clean-css'),
+  // LessPluginAutoPrefix = require('less-plugin-autoprefix'),
+  // lessCleanCSS = new LessPluginCleanCSS({ advanced: false, compatibility:'ie8,+selectors.ie7Hack'}),
+  // lessAutoPrefix = new LessPluginAutoPrefix({ browsers: ["last 4 versions"], remove:false });
+  plugins: [lessAutoPrefix, lessCleanCSS]
+
+ /** "lessAutoPrefix" is an instance of "LessPluginAutoPrefix".
+   * You can get pretty granular with different autoprefix
+   * configs if you needed to.
+  **/
+
+ /** "lessCleanCSS" is an instance of "LessPluginCleanCSS".
+   * This plugin minifies your css files. There are a ton
+   * of other options that this plugin takes.
+   * [clean-css]{@link https://github.com/jakubpawlowicz/clean-css}
+  **/
+}))
+
+
+// I'm only giving our extension a ".less.css"
+// for the purpose of this example since we are also
+// going to be processing our SASS into the same location.
+.pipe(rename(function(path){
+  path.extname = '.less.css';
+}))
+```
+
+     
+###### Sass (SCSS)
+```bash
+$ gulp sass
+```
+```js
+gulp.task('sass', function() {
+  return gulp.src(projectPath.src + 'sass/main.scss')
+    .pipe(sass({outputStyle: 'compressed'}))
+    .pipe(autoprefixer('last 4 versions'))
+    .pipe(rename(function(path){
+      path.extname = '.sass.css';
+    }))
+    .pipe(gulp.dest(projectPath.dist + '/css'))
+});
+```
+Similar to our **less** task, our **sass** task follows the same idea. Take our main.scss file and pipe it through our sass compiler, then run autoprefixer, and finally rename our extension and output the CSS to our `dist/css` folder.
+
+
+---
+
+## <span id="step-7-gulp-watch">Step 7: Gulp Watch </span>
+
+Now that we have tasks to compile our less, sass and scripts we can create our watch task to have gulp continually watch for file changes and trigger specified tasks.
+
+```bash
+$ gulp watch
+```
+```js
+gulp.task('watch', function() {
+
+  /** The first parameter is for letting gulp know what
+    * files to watch and the second is for the task(s) that
+    * should be triggered on a detected change.
+   **/
+    gulp.watch( projectPath.src + 'less/*.less', ['less']);
+  /** Here we tell gulp to watch all of our src/less/*.less files
+    * and then trigger our 'less' task we defined earlier.
+   **/
+
+    gulp.watch( projectPath.src + 'sass/*.scss', ['sass']);
+    gulp.watch( projectPath.src + 'js/*.js', ['scripts']);    
+});
+```
+
+##### gulp.watch()
+```javascript
+/** For official docs on gulp.watch
+  * [gulp.watch]{@link https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpwatchglob--opts-tasks-or-gulpwatchglob--opts-cb}
+  * 
+  * Usage: gulp.watch(glob[, opts], tasks)
+**/
+```
+
+---
+
+## <span id="step-8-the-gulp-default-task">Step 8: The Gulp Default Task</span>
+
+We can bring everything together by defining a simple default task.
+```js
+gulp.task('default', ['less', 'sass', 'scripts', 'watch']);
+```
+This gives us the ability to just say `$ gulp` and everything just happens. 
+```bash
+$ gulp
+```
+Less, Sass, Scripts and even our Watch task gets started.
+
+```bash
+[11:23:38] Using gulpfile ./gulpfile.js
+[11:23:38] Starting 'less'...
+[11:23:38] Starting 'sass'...
+[11:23:38] Starting 'scripts'...
+[11:23:38] Starting 'watch'...
+[11:23:38] Finished 'watch' after 12 ms
+[11:23:38] Finished 'scripts' after 162 ms
+[11:23:38] Finished 'sass' after 168 ms
+[11:23:38] Finished 'less' after 177 ms
+[11:23:38] Starting 'default'...
+[11:23:38] Finished 'default' after 4 μs
+```
+
+---
+## <span id="step-9-gulp--browsersync">Step 9: Gulp + Browsersync</span>
+https://www.browsersync.io
+
+Start by installing Browsersync as a devDependency.
+```bash
+npm install browser-sync --save-dev
+```
+
+In our `gulpfile.js` we have to define Browsersync.
+```js
+// Browsersync
+var browserSync = require('browser-sync').create(),
+    reload = browserSync.reload;
+```
+
+In our `gulp watch` task we init Browsersync and make a few small adjustments to our watch setup.
+```js
+gulp.task('watch', function() {
+  
+ // Initialize browser sync
+    browserSync.init({
+        server: {
+            baseDir: "./"
+        }
+    });
+
+/** Originally: gulp.watch( projectPath.src + 'less/*.less', ['less']);
+  * Modified to create a task that ensures the `less` task is complete
+  * before reloading browsers
+ **/
+    gulp.task('less:watch', ['less'], reload);
+    gulp.watch( projectPath.src + 'less/*.less', ['less:watch']);
+    
+    
+    gulp.task('sass:watch', ['sass'], reload);
+    gulp.watch( projectPath.src + 'sass/*.scss', ['sass:watch']);
+   
+    gulp.task('scripts:watch', ['scripts'], reload);
+    gulp.watch( projectPath.src + 'js/*.js', ['scripts:watch']);    
+});
+```
+Thats it! Now run `gulp`, edit a file and watch the browser update :)
+
+
+---
+
+
+### (TL;DR) Wrapping it up
+- A working example can be found my [GitHub](https://github.com/amineo/blog-getting-started-with-gulp)
+- Hit me up on Twitter: [@Mineo27](https://twitter.com/Mineo27) if you have any issues/questions

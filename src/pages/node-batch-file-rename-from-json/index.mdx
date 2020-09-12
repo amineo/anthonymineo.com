@@ -1,0 +1,107 @@
+import { anthonymineo } from '@/authors'
+import image from './card.jpg'
+import {tag} from '@/tags';
+
+export const meta = {
+  draft: false,
+  featured: false,
+  title: "Batch File Renaming in Node from a JSON File",
+  description: "So, let's say you have a few hundred ${guid}.zip or other files that uniformly match up to a data source but you need to rename them to something a little more friendly...",
+  date: "2018-03-08T16:16:00.0Z",
+  updated: "2020-08-27T20:00:00.0Z",
+  authors: [anthonymineo],
+  tags: [tag("Node.js"), tag("JavaScript")],
+  slug: "/node-batch-file-rename-from-json/",
+  image,
+  repo: "https://github.com/amineo/node-batch-file-rename-from-json"
+}
+
+
+export const config = { amp: 'hybrid' }
+
+<!--excerpt-->
+
+So, let's say you have a few hundred ${guid}.zip or other files that uniformly match up to a data source but you need to rename them to something a little more friendly...
+
+<!--/excerpt-->
+
+
+
+
+#### The Goal
+
+So, let's say you have a few hundred `${guid}.zip` or other files that uniformally match up to a data source but you need to rename them to something friendly like `${name}.zip`, for example.
+
+```
+    02cf5525-8fa2-4af9-b93f-9ec5fa1973fe.zip => Pizza.zip
+```
+
+---
+
+#### data.json
+An example of how our data might look.
+```json
+[
+	{
+		"guid": "02cf5525-8fa2-4af9-b93f-9ec5fa1973fe",
+		"name": "Pizza"
+	},
+	{
+		"guid": "33371cae-1056-43f5-837d-326b4467e423",
+		"name": "Beer"
+	},
+	{
+		"guid": "508216a5-3d7c-4918-a47a-67100e324099",
+		"name": "Pretzels"
+	}
+]
+```
+
+#### index.js
+Our script will start by reading that JSON file and then begin iterating over each key. In our case, if it doesn't find a file that matches up with the `guid` key in our Object it will write-out a text file with the `guid` it couldn't find. Pretty handy if you have a massive object, a ton of files and wanted to make sure you weren't missing anything. :)
+
+
+```js
+// Require Node's File System module
+const fs = require('fs');
+
+// Read the JSON file
+fs.readFile('data.json', function (error, data) {
+    if (error) {
+        console.log(error);
+        return;
+    }
+
+    const obj = JSON.parse(data);
+
+    // Iterate over the object
+    Object.keys(obj).forEach(key => {
+        let _from = `${__dirname}/files/${obj[key].guid}.zip`;
+        let _to = `${__dirname}/files/${obj[key].name}.zip`;
+
+        console.log(_from, _to); 
+
+        fs.rename(_from, _to, function (err) {
+             if (err){
+                 console.log('ERROR: ' + err);
+
+                 // If there was a file defined in the data.json that was supposed to be renamed but did not exist
+                 // Let us know which files (if any) were missing
+                 let stream = fs.createWriteStream(`${__dirname}/files/${obj[key].guid}.txt`);
+                 stream.once('open', function (fd) {
+                     stream.write("This file was supposed to be defined in the object\n");
+                     stream.end();
+                 });
+            }
+        });
+    });
+});
+```
+
+---
+
+#### Download
+
+[**Download source on GitHub**](https://github.com/amineo/node-batch-file-rename-from-json)
+
+If you have any questions, hit me up on [Twitter](https://twitter.com/Mineo27).

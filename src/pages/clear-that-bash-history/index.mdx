@@ -1,0 +1,64 @@
+import { anthonymineo } from '@/authors'
+import image from './card.jpg'
+import {tag} from '@/tags';
+
+export const meta = {
+  draft: false,
+  featured: false,
+  title: "Automatically clear that bash history!",
+  description: "Bash stores a history of commands that were previously executed by a user in plain text (.bash_history). As you probably realize, this becomes a security issue when you're running commands that contain sensitive information",
+  date: "2019-03-31T12:10:00.0Z",
+  updated: "2020-08-27T20:00:00.0Z",
+  authors: [anthonymineo],
+  tags: [tag("Linux")],
+  slug: "/clear-that-bash-history/",
+  image
+}
+
+export const config = { amp: 'hybrid' }
+
+
+<!--excerpt-->
+
+Bash stores a history of commands that were previously executed by a user in plain text (`.bash_history`). As you probably realize, this becomes a security issue when you're running commands that contain sensitive information
+
+<!--/excerpt-->
+
+Bash stores a history of commands that were executed by a user in a plain text file (`.bash_history`). *Well, actually it stores those previously ran commands in memory first, then writes it out to `.bash_history`*. This allows you to easily scroll through and run a previously entered command.
+
+However, as you probably realize, this also becomes a security issue when you're running commands that contain sensitive information... like `echo "MyPassword" | docker secret create db_pass -`, which you wouldn't ever want to be logged in plain text. Because of this, it's important to keep that history clear and because I'm forgetful (*just ask my wife*) it becomes important to just have it clear automatically. 
+
+### Crontab: Clearing bash history
+Using the Crontab editor we can easily setup a job to clear it for us at whatever cron schedule we specify. For my example we're going to clear it at 11pm everynight. 
+```bash
+crontab -e
+```
+
+**Once the contab editor opens:**
+```
+# Clear bash history everynight at 11pm
+00 23 * * * cat /dev/null > ~/.bash_history
+```
+
+_Pro Tip:_ If you're new to cron syntax, https://crontab.guru/ is an excellent resource for cron schedule expressions.
+
+
+### The Manual Method
+
+To clear bash history on demand you can run:
+```bash
+cat /dev/null > ~/.bash_history && history -c
+```
+This clears the `.bash_history` log and the log that gets stored in memory *before* it writes to `.bash_history`
+
+`cat /dev/null > ~/.bash_history` clears the bash history text file and `history -c` clears the history stored in memory.
+
+
+### Bonus (user-data.sh)
+You can leverage `user-data.sh` and have this contab configured and running automatically when you spinup a new server! How awesome is that!
+```bash
+crontab -l -u root | echo "00 23 * * * cat /dev/null > ~/.bash_history" | crontab -u root -
+```
+
+
+Hope this helps! Hit me up on Twitter: [@Mineo27](https://twitter.com/Mineo27) if you have any issues/questions.

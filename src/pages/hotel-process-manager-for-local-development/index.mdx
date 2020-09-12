@@ -1,0 +1,101 @@
+import {Highlight} from '@/components/Editor';
+import Image from '@/components/Image';
+import { anthonymineo } from '@/authors'
+import image from './card.jpg'
+import {tag} from '@/tags';
+
+
+export const meta = {
+  draft: false,
+  featured: false,
+  title: "Hotel - A Process Manager for Local Domains",
+  description: "Hotel is a simple process manager for developers that allows you to start your apps from a browser and even access them using .localhost domains. It practically works with all servers and even supports https...",
+  date: "2018-03-13T20:28:00.0Z",
+  updated: "2020-08-27T20:00:00.0Z",
+  authors: [anthonymineo],
+  tags: [tag("DevOps")],
+  slug: "/hotel-process-manager-for-local-development/",
+  image
+}
+
+export const config = { amp: 'hybrid' }
+
+<!--excerpt-->
+
+Hotel is a simple process manager for developers that allows you to start your apps from a browser and even access them using .localhost domains. It practically works with all servers and even supports https...
+
+<!--/excerpt-->
+
+<Image
+  src="/content/images/2018/03/hotel-dashboard.png"
+  alt="Hotel - Dashboard"
+  width="2176"
+  height="900"
+/>
+
+
+
+[Hotel](https://github.com/typicode/hotel) is a simple process manager for developers that allows you to start your apps from a browser and even access them using <Highlight>.localhost</Highlight> domains. It practically works with all servers and even supports **https**, *although you'll still have to manually trust the cert on your machine*.
+
+I stumbled upon [Hotel](https://github.com/typicode/hotel) when I was reading through some of the newer AdonisJS docs. I was a bit surprised I hadn't heard about it earlier. It's really handy! You don't have to remember any app start commands or ports. It's all stored for you :)
+
+**Getting started with Hotel is really simple.**
+
+```bash
+# Install and start Hotel
+npm install -g hotel && hotel start
+
+
+# Add your server to Hotel
+~/projects/node-app 
+$ hotel add 'npm start'
+
+
+# Or you can start a server with a temporary .localhost domain
+~/projects/jekyll-app 
+$ hotel add 'jekyll serve --port $PORT'
+```
+
+Hotel has a dashboard that allows you to start/stop and view the logs of all your local servers. By default, it's located at http://localhost:2000 or http://hotel.localhost.
+
+## Getting .localhost to work
+This requires a extra step, but no worries it's pretty easy.
+
+**On macOS:**
+`Network Preferences > Advanced > Proxies > Automatic Proxy Configuration`
+
+<Image
+  src="/content/images/2018/03/hotel-proxy-localhost.png"
+  alt="Hotel - Proxy .localhost setup"
+  width="1342"
+  height="1126"
+/>
+
+
+**For Windows/Linux or via browser config:**
+You can find instructions on the official docs - https://github.com/typicode/hotel/blob/master/docs/README.md
+
+
+## It works with CommandBox!
+For my ColdFusion friends, you can add your [CommandBox](https://commandbox.ortusbooks.com/content/embedded_server/server_port_and_host.html) server with the snippet below. You can pass any arguments you like into that command string.
+
+```bash
+~/projects/your-lucee-commandbox-app 
+$ hotel add 'box server start port=$PORT' --port 8080
+```
+Then simply visit http://your-lucee-commandbox-app.localhost in the browser and Hotel will automatically tell CommandBox to start that particular server for you. *How awesome!*
+
+**Note:** Depending on your machine and how fast the server spins up, Hotel might prematurely toss an error at you saying "the server was unreachable". **This is because the embedded CFML server has not finished starting up**. Just refresh the page in a few seconds and you should be good. 
+
+
+## Some additional commands
+```
+hotel ls             # List servers
+hotel rm <app-name>  # Remove server
+hotel start          # Start hotel daemon
+hotel stop           # Stop hotel daemon
+```
+Don't forget to checkout their [GitHub Docs](https://github.com/typicode/hotel) for additional info.
+
+---
+Hope you all find this as helpful as I did. If you have any questions, hit me up on [Twitter](https://twitter.com/Mineo27).

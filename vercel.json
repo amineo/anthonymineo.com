@@ -1,0 +1,115 @@
+{
+    "trailingSlash": true,
+    "redirects": [
+        {
+            "source": "/author/:slug/",
+            "destination": "/",
+            "permanent": true
+        },
+        {
+            "source": "/tag/getting-started/",
+            "destination": "/",
+            "permanent": true
+        },
+        {
+            "source": "/tag/",
+            "destination": "/",
+            "permanent": true
+        },
+        {
+            "source": "/sitemap-tags.xml",
+            "destination": "/sitemap.xml",
+            "permanent": true
+        },
+        {
+            "source": "/sitemap-authors.xml",
+            "destination": "/sitemap.xml",
+            "permanent": true
+        },
+        {
+            "source": "/sitemap-posts.xml",
+            "destination": "/sitemap.xml",
+            "permanent": true
+        },
+        {
+            "source": "/sitemap-pages.xml",
+            "destination": "/sitemap.xml",
+            "permanent": true
+        },
+        {
+            "source": "/rss/",
+            "destination": "/rss.xml",
+            "permanent": true
+        },
+        {
+            "source": "/node-batch-file-rename-from-json/amp/",
+            "destination": "/node-batch-file-rename-from-json.amp",
+            "permanent": true
+        },
+        {
+            "source": "/trace-elements-plugin-for-redactor/amp/",
+            "destination": "/trace-elements-plugin-for-redactor.amp",
+            "permanent": true
+        },
+        {
+            "source": "/clear-that-bash-history/amp/",
+            "destination": "/clear-that-bash-history.amp",
+            "permanent": true
+        },
+        {
+            "source": "/mjml4-lambda/amp/",
+            "destination": "/mjml4-lambda.amp",
+            "permanent": true
+        },
+        {
+            "source": "/simple-child-to-parent-communication-in-react/amp/",
+            "destination": "/simple-child-to-parent-communication-in-react.amp",
+            "permanent": true
+        },
+        {
+            "source": "/rotating-your-docker-secrets-can-be-easy-if-you-plan-for-it/amp/",
+            "destination": "/rotating-your-docker-secrets-can-be-easy-if-you-plan-for-it.amp",
+            "permanent": true
+        },
+        {
+            "source": "/docker-healthcheck-for-your-node-js-app/amp/",
+            "destination": "/docker-healthcheck-for-your-node-js-app.amp",
+            "permanent": true
+        },
+        {
+            "source": "/communication-between-independent-components-in-react-using-pubsubjs/amp/",
+            "destination": "/communication-between-independent-components-in-react-using-pubsubjs.amp",
+            "permanent": true
+        },
+        {
+            "source": "/hotel-process-manager-for-local-development/amp/",
+            "destination": "/hotel-process-manager-for-local-development.amp",
+            "permanent": true
+        },
+        {
+            "source": "/adonisjs-todo-app/amp/",
+            "destination": "/adonisjs-todo-app.amp",
+            "permanent": true
+        },
+        {
+            "source": "/getting-started-with-gulp/amp/",
+            "destination": "/getting-started-with-gulp.amp",
+            "permanent": true
+        },
+        {
+            "source": "/migrating-from-coldfusion-10-to-11-side-by-side/amp/",
+            "destination": "/migrating-from-coldfusion-10-to-11-side-by-side.amp",
+            "permanent": true
+        },
+        {
+            "source": "/bootstrap-4-psd-grid-guideguide-preset/amp/",
+            "destination": "/bootstrap-4-psd-grid-guideguide-preset.amp",
+            "permanent": true
+        },
+        {
+            "source": "/updating-ghost-to-0-10-1-from-0-6-4-node-0-12-to-4-5-lts-npm/amp/",
+            "destination": "/updating-ghost-to-0-10-1-from-0-6-4-node-0-12-to-4-5-lts-npm.amp",
+            "permanent": true
+        }
+    ]
+}

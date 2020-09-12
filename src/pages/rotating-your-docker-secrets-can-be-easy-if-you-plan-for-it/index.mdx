@@ -1,0 +1,137 @@
+import { anthonymineo } from '@/authors'
+import image from './card.jpg'
+import {tag} from '@/tags';
+
+export const meta = {
+  draft: false,
+  featured: false,
+  title: "Rotating Your Docker Secrets Can Be Easy, If You Plan For It",
+  description: "In your docker-compose file, defining a secret's source and target let you easily rotate your secrets without changing any application code. You need to standardize your naming conventions, however.",
+  date: "2018-08-23T21:10:00.0Z",
+  updated: "2020-08-27T20:00:00.0Z",
+  authors: [anthonymineo],
+  tags: [tag("Docker")],
+  slug: "/rotating-your-docker-secrets-can-be-easy-if-you-plan-for-it/",
+  image
+}
+
+
+export const config = { amp: 'hybrid' }
+
+<!--excerpt-->
+
+In your docker-compose file, defining a secret's source and target let you easily rotate your secrets without changing any application code. You need to standardize your naming conventions, however.
+
+<!--/excerpt-->
+
+
+
+In your docker-compose file, defining a secret's source and target let you easily rotate your secrets without changing any application code.
+
+The first step I recommend is coming up with standard naming conventions across all your secrets that you and your team can agree on.
+
+An example of a naming convention that we use on my team looks something like this:
+```yaml
+# Convention
+(service|stack|website).subject.title.attribute.version
+
+# Useage
+anthonymineocom.azure.sql.host.v1
+```
+
+Regardless of what convention you come up with, **be sure to end it in a version**. <u>This is the part that makes the rotation easy and trackable.</u> *More on this in a bit.* 
+
+
+## Setting up your docker-compose.yml
+
+Instead of running something like `docker service update --secret...`, In your `docker-compose.yml` specify the `source` and `target` for your secrets in the corresponding services.
+
+This is especially important because if you plan for it, **the code in your application and how you reference secrets do not need to change**. *And that's a good thing!* Only your `docker-compose.yml` file needs to be updated, and of course, you still need to create the secret in Swarm.
+
+Here's a real example of how your docker-compose could look:
+
+```yaml
+version: "3.4"
+
+services:
+  # CFML Engine
+  cfml:
+    image: ortussolutions/commandbox:lucee5-2.3.0
+    environment:
+      DSN_HOST: <<SECRET:company.azure.sql.host>>
+      DSN_DB: <<SECRET:website.dsn.db>>
+      DSN_USERNAME: <<SECRET:website.dsn.username>>
+      DSN_PASSWORD: <<SECRET:website.dsn.password>>
+
+    secrets:
+      - source: company.azure.sql.host.v1
+        target: company.azure.sql.host
+      - source: website.dsn.db.v1
+        target: website.dsn.db
+      - source: website.dsn.username.v1
+        target: website.dsn.username
+      - source: website.dsn.password.v1
+        target: website.dsn.password
+
+secrets:
+  company.azure.sql.host.v1:
+    external: true
+  website.dsn.db.v1:
+    external: true
+  website.dsn.username.v1:
+    external: true
+  website.dsn.password.v1:
+    external: true
+```
+
+
+Notice how `source` and `target` are listed in an expanded format.
+
+### Source
+Source is the versioned secret that resides in Docker Swarm. Usually created with `docker secret create`.
+
+### Target
+Target is just a reference or pointer to the actual secret used in your application. The target should not be versioned. If you do, then you will need to update the references in your application.
+
+Think of it as if `target` was the alias of `source`, which is the actual secret that lives in Docker Swarm.
+
+
+## Rotating your secrets
+
+In our scenario we're going to update our `website.dsn.password`. Since `v1` already exists, we're just going to increment to `v2`.
+
+---
+
+First, add the new secret to Docker Swarm.
+```bash
+echo "120minuteIPAALLDAY" | docker secret create website.dsn.password.v2 -
+```
+
+Now, in our `docker-compose.yml` we only need to update 2 spots. Our main secrets dictionary, and the secrets dictionary for the service.
+```yaml
+version: "3.4"
+
+services:
+  # CFML Engine
+  cfml:
+    ...
+    secrets:
+      ...
+      - source: website.dsn.password.v2
+        target: website.dsn.password
+
+secrets:
+  ...
+  website.dsn.password.v2:
+    external: true
+```
+
+
+And finally... re-deploy the stack with the updated secret.
+
+`docker stack deploy -c docker-compose.yml yourstack`. 
+Swarm will then go through the motions of updating the services who's secrets have changed.
+
+
+Hope this helps! Hit me up on Twitter: [@Mineo27](https://twitter.com/Mineo27) if you have any issues/questions.
+

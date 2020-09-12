@@ -1,0 +1,123 @@
+import {Highlight, LineBreakA, LineBreakB} from '@/components/Editor';
+import { anthonymineo } from '@/authors'
+import image from './card.jpg'
+import {tag} from '@/tags';
+
+
+export const meta = {
+  draft: false,
+  featured: false,
+  title: "Hey, I rebuilt my blog with Next.js",
+  description: "My original blog was built with Ghost and hosted on DigitalOcean. And while I enjoyed my time with Ghost, there were a few things I wanted to explore outside its scope, like writing posts with MDX! Mounting React components in blog posts is really cool! While I did manage to work everything out, the migration was not a cakewalk, however. It's 2020, what could go wrong?",
+  date: "2020-09-12T11:00:00.0Z",
+  updated: "2020-09-12T11:00:00.0Z",
+  authors: [anthonymineo],
+  tags: [tag("React")],
+  slug: "/rebuilding-my-blog-with-nextjs/",
+  image
+}
+
+export const config = { amp: 'hybrid' }
+
+<!--excerpt-->
+
+My original blog was built with Ghost and hosted on DigitalOcean. And while I enjoyed my time with Ghost, there were a few things I wanted to explore outside its scope, **like writing posts with MDX!** Mounting React components in blog posts is really cool! While I did manage to work everything out, the migration was _not_ a cakewalk, however. It's 2020, what could go wrong?
+
+<!--/excerpt-->
+
+<p className="text-xl">My original blog was built with Ghost and hosted on DigitalOcean. And while I enjoyed my time with Ghost, there were a few things I wanted to explore outside its scope, <strong>like writing posts with MDX!</strong> Mounting React components in blog posts is really cool! While I did manage to work everything out, the migration was <em>not</em> a cakewalk, however. It's 2020, what could go wrong?
+</p>
+
+### Motivation
+Well... I'm addicted to learning things, can't help it, and saw this as an opportunity to further my experience with React and get more familiar with SSG.  
+
+I choose Next.js over Gatsby not because I think its a better product, but because I felt that it was a better fit for my use case. I'm a fan of Gatsby and met some of their devs at last year's [JamStack Conf NYC - 2019](https://2019.jamstackconf.com/nyc/).
+  
+To me, Next.js's filesystem routing was key, and static site gen is one of its strongest points. I can simply create a `blog-post.mdx` file in the `./pages/` folder and that generates a route to `anthonymineo.com/blog-post`. Additionally, my `.mdx` files contain a `meta {}` object for the post's frontmatter that gets picked up automatically with the function `getStaticProps`. I felt that using a GraphQL API (Gatsby) for this was a bit overkill. So, I went with Next.js.
+
+<LineBreakA />
+
+### The Migration Experience - (Figuring things out)
+There were a few hurdles that I had to overcome migrating from Ghost. In Next.js, how do you generate a **sitemap? RSS? AMP? Post tags? Rewrites and redirects?** Not going to lie, it did seem a little daunting at first, but I was able to get through it at a decent pace.
+
+First off, the [Next.js website/blog repo](https://github.com/vercel/next-site) and [Tailwind's blog](https://blog.tailwindcss.com/building-the-tailwind-blog) are treasure troves of information. Reading the official Next.js docs did feel a little lacking at times, and referring to their website's repo did help a ton. _Thanks guys!_
+
+<LineBreakB />
+
+#### The Sitemap & RSS
+Drawing inspiration from how Next.js' site and the Tailwind blog generate RSS, I wrote a script that generates a sitemap for my blog.
+
+```javascript
+import fs from 'fs';
+import tinytime from 'tinytime';
+const postDateTemplate = tinytime('{YYYY}-{Mo}-{DD}T{H}:{mm}:{ss}.0Z', { padMonth: true });
+
+function importAll(r) {
+    return r.keys().map((fileName) => ({
+        link: fileName.substr(1).replace(/\/index\.mdx$/, ''),
+        module: r(fileName)
+    }));
+}
+
+function dateSortDesc(a, b) {
+    if (a > b) return -1;
+    if (a < b) return 1;
+    return 0;
+}
+
+ function getAllPostPreviews() {
+    return importAll(require.context('./pages/?preview', true, /\.mdx$/)).sort((a, b) =>
+        dateSortDesc(a.module.meta.date, b.module.meta.date)
+    );
+}
+
+
+let sitemapItems = '';
+
+getAllPostPreviews().forEach(({ link, module: { meta } }) => {
+    sitemapItems += `<url><loc>${`https://anthonymineo.com${link}/`}</loc><lastmod>${meta.updated}</lastmod></url>`;
+});
+
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+                  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                    <url><loc>https://anthonymineo.com/</loc><lastmod>${postDateTemplate.render( new Date())}</lastmod></url>
+                    ${sitemapItems}
+                  </urlset>`;
+
+fs.writeFileSync('./public/sitemap.xml', sitemap);
+
+console.log(`✅ sitemap.xml generated!`);
+
+```
+Running this script on build sticks an updated `sitemap.xml` file in `./public`.  Pretty sweet!
+
+<LineBreakB />
+
+#### Tags
+Tags were probably the most complicated part of the whole process and warrants a post of its own. For brevity, I was able to make it work using [Next.js's dynamic routes](https://nextjs.org/docs/routing/dynamic-routes). 
+
+Essentially, I set up a page as: `pages/tag/[tag].js` where `[tag]` became a dynamic slug.  Using the incoming slug, I check it against a list of known, pre-defined tags, and if it exists in the list, return a list of matched posts; if not, return a 404.
+
+Feel free to look at my blog's repo to see how I wired it up.
+
+<LineBreakB />
+
+#### Rewrite & Redirects
+I found two ways to handle this, and both are straight forward; Write them in your [next.config.js](https://nextjs.org/docs/api-reference/next.config.js/rewrites) or, if your hosting on Vercel, write them in [vercel.json](https://vercel.com/docs/configuration#project/rewrites).
+
+Ultimately, I ended up writing them in the `vercel.json` file since I'm hosting my blog on Vercel.
+
+<LineBreakB />
+
+#### AMP (*I felt really gross setting this up*)
+The only reason I bothered setting up AMP was that Ghost handled it out of the box without any thought, and I didn't mind using it at the time until Google decided to brand the internet and your websites as "Google.com," but I digress. 
+
+Next.js's AMP support is by page opt-in.  Enabling AMP for a blog post was as simple as adding `export const config = { amp: 'hybrid' }` to a `blog-post.mdx` file. 
+
+However, if you're embedding your styles like me, you'll likely run into this issue outlined here: [https://github.com/vercel/next-plugins/issues/238](https://github.com/vercel/next-plugins/issues/238#issuecomment-686830634), where styles won't generate on build for your amp pages, while your standard pages will look fine. Luckily, there's a workaround outlined in that post. :)
+
+<LineBreakA />
+
+### Learning Experience
+All in all, I'm pretty happy with it.  I got all the functionality from my old blog but with a significant benefit of making examples in my posts a bit more interactive.  Like my post on [Simple Child to Parent Communication](https://anthonymineo.com/simple-child-to-parent-communication-in-react/) in React. The example code now has like React component showing it in action!
+
