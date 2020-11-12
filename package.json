@@ -12,20 +12,20 @@
   },
   "dependencies": {
     "@mapbox/rehype-prism": "^0.5.0",
-    "@mdx-js/loader": "^1.6.6",
-    "@next/mdx": "^9.5.3",
+    "@mdx-js/loader": "^1.6.21",
+    "@next/mdx": "^9.5.5",
     "@tailwindcss/typography": "^0.2.0",
     "@tailwindcss/ui": "^0.5.0",
     "autoprefixer": "^9.8.4",
-    "next": "^9.5.3",
+    "next": "^9.5.5",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "tailwindcss": "^1.7.6",
+    "tailwindcss": "^1.9.6",
     "tinytime": "^0.2.6"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^9.5.3",
-    "file-loader": "^6.1.0",
+    "@next/bundle-analyzer": "^9.5.5",
+    "file-loader": "^6.2.0",
     "rss": "^1.2.2",
     "simple-functional-loader": "^1.2.1"
   }
