@@ -1,0 +1,148 @@
+import { Highlight, LineBreakA, LineBreakB } from '@/components/Editor'
+import Image from '@/components/Image'
+import { anthonymineo } from '@/authors'
+import image from './card.jpg'
+import { tag } from '@/tags'
+
+export const meta = {
+  draft: false,
+  featured: false,
+  title: 'Easily Log Your Web Traffic to DataDog using CloudFlare Workers',
+  description: `I love DataDog, and I love CloudFlare, and If you're aggressively caching as we do, a good portion of requests won't ever make it to the origin, which is a good thing. However, a downside is that you'll likely miss out on having complete traffic logs. Fortunately, using CloudFlare Workers can help us solve this issue.`,
+  date: '2021-02-21T12:10:00.0Z',
+  updated: '2021-02-21T20:00:00.0Z',
+  authors: [anthonymineo],
+  tags: [tag('DevOps'), tag('JavaScript')],
+  slug: '/easily-log-web-traffic-to-datadog-using-cloudflare-workers/',
+  image,
+}
+
+export const config = { amp: 'hybrid' }
+
+<!--excerpt-->
+
+I love DataDog, and I love CloudFlare, and If you're aggressively caching as we do, a good portion of requests won't ever make it to the origin, which is a good thing. However, a downside is that you'll likely miss out on having complete traffic logs. **Fortunately, using CloudFlare Workers can help us solve this issue**.
+
+<!--/excerpt-->
+
+<p className="text-xl">
+  I love DataDog, and I love CloudFlare, and If you're aggressively caching as we do, a good portion
+  of requests won't ever make it to the origin, which is a good thing. However, a downside is that
+  you'll likely miss out on having complete traffic logs.{' '}
+  <strong>Fortunately, using CloudFlare Workers can help us solve this issue.</strong>
+</p>
+
+<LineBreakA />
+
+### Generate an API Key in DataDog
+
+First, we need to create a **new** API key for CloudFlare Workers to use. Please don't use an already existing one! ;)
+
+<Image
+  src="/content/images/easily-log-web-traffic-to-datadog-using-cloudflare-workers/dd-create-api-key.png"
+  alt="Create a DataDog API Key"
+  width="883"
+  height="277"
+/>
+
+<LineBreakB />
+
+### Setup a KV Store in CloudFlare
+
+Now, in CloudFlare, go ahead and create a new KV Namespace for `datadog`. Then, we need to create a key-value pair for our API Key.
+
+In our example, let's use `apikey` for the key name and **your DataDog API key** for the value.
+
+<Image
+  src="/content/images/easily-log-web-traffic-to-datadog-using-cloudflare-workers/cloudflare-kv.png"
+  alt="Setup a KV Store in CloudFlare"
+  width="610"
+  height="283"
+/>
+
+In our code, we can call `datadog.get("apikey")` and get back our key's value. How convenient!
+
+<LineBreakB />
+
+### Let's get coding!
+
+So, the whole idea here is to take the browsers request and response for a resource and then forward it out to DataDog for logging via a CloudFlare worker.
+
+Since we have complete control over what's being sent to DataDog in the `data` object, you can sanitize or enhance whatever you like before it gets sent off.
+
+**CloudFlare Worker**
+
+```javascript
+addEventListener('fetch', (event) => {
+  // Prevent errors on the frontend if DataDog's API acts up
+  event.passThroughOnException()
+  event.respondWith(handleRequest(event))
+})
+
+async function handleRequest(event) {
+  const response = await fetch(event.request)
+
+  event.waitUntil(logToDataDog(event.request, response))
+  return response
+}
+
+async function logToDataDog(request, response) {
+  // Get our key from CloudFlare KV store
+  const dd_apikey = await datadog.get('apikey')
+
+  let dd_logsEndpoint = 'https://http-intake.logs.datadoghq.com/v1/input/' + dd_apikey
+  let ray = request.headers.get('cf-ray') || ''
+  let hostname = request.headers.get('host') || ''
+
+  // data to log
+  let data = {
+    ddsource: 'cloudflare',
+    ddtags: 'service:cloudflare,source:cloudflare,site:' + hostname,
+    hostname: hostname,
+    message: {
+      date_access: Date.now(),
+      http: {
+        protocol: request.headers.get('X-Forwarded-Proto') || '',
+        host: request.headers.get('host') || '',
+        status_code: response.status,
+        method: request.method,
+        url_details: request.url,
+        referer: request.headers.get('referer') || '',
+      },
+      useragent_details: {
+        ua: request.headers.get('user-agent') || '',
+      },
+      network: {
+        cc: request.headers.get('Cf-Ipcountry') || '',
+      },
+      cloudflare: {
+        ray: ray,
+        visitor: request.headers.get('cf-visitor') || '',
+      },
+    },
+  }
+
+  await fetch(dd_logsEndpoint, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: new Headers({
+      'Content-Type': 'application/json',
+    }),
+  })
+}
+```
+
+**How it all looks in DataDog**
+
+<Image
+  src="/content/images/easily-log-web-traffic-to-datadog-using-cloudflare-workers/cloudflare-dd-log.png"
+  alt="CloudFlare logs in DataDog"
+  width="627"
+  height="867"
+/>
+
+And there we have it! CloudFlare logs in DataDog. :)
+
+<LineBreakA />
+
+**Hope this helps!** Hit me up on Twitter: [@Mineo27](https://twitter.com/Mineo27) if you have any issues/questions.
