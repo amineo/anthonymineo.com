@@ -89,9 +89,8 @@ async function handleRequest(event) {
 async function logToDataDog(request, response) {
   // Get our key from CloudFlare KV store
   const dd_apikey = await datadog.get('apikey')
-
   let dd_logsEndpoint = 'https://http-intake.logs.datadoghq.com/v1/input/' + dd_apikey
-  let ray = request.headers.get('cf-ray') || ''
+
   let hostname = request.headers.get('host') || ''
 
   // data to log
@@ -116,7 +115,7 @@ async function logToDataDog(request, response) {
         cc: request.headers.get('Cf-Ipcountry') || '',
       },
       cloudflare: {
-        ray: ray,
+        ray: request.headers.get('cf-ray') || '',
         visitor: request.headers.get('cf-visitor') || '',
       },
     },
