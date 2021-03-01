@@ -4,8 +4,18 @@
         <description><![CDATA[AnthonyMineo.com - Blog]]></description>
         <link>https://anthonymineo.com</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Sat, 12 Sep 2020 18:20:36 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 01 Mar 2021 14:52:47 GMT</lastBuildDate>
         <atom:link href="https://anthonymineo.com/rss.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[Easily Log Your Web Traffic to DataDog using CloudFlare Workers]]></title>
+            <description><![CDATA[I love DataDog, and I love CloudFlare, and If you're aggressively caching as we do, a good portion of requests won't ever make it to the origin, which is a good thing. However, a downside is that you'll likely miss out on having complete traffic logs. Fortunately, using CloudFlare Workers can help us solve this issue.]]></description>
+            <link>https://anthonymineo.com/easily-log-web-traffic-to-datadog-using-cloudflare-workers/</link>
+            <guid isPermaLink="false">/easily-log-web-traffic-to-datadog-using-cloudflare-workers</guid>
+            <pubDate>Sun, 21 Feb 2021 12:10:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
         <item>
             <title><![CDATA[Hey, I rebuilt my blog with Next.js]]></title>
             <description><![CDATA[My original blog was built with Ghost and hosted on DigitalOcean. And while I enjoyed my time with Ghost, there were a few things I wanted to explore outside its scope, like writing posts with MDX! Mounting React components in blog posts is really cool! While I did manage to work everything out, the migration was not a cakewalk, however. It's 2020, what could go wrong?]]></description>
