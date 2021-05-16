@@ -1,6 +1,7 @@
+import { LineBreakA } from '@/components/Editor';
 import Image from '@/components/Image';
-import { anthonymineo } from '@/authors'
-import image from './card.jpg'
+import { anthonymineo } from '@/authors';
+import image from './card.jpg';
 import {tag} from '@/tags';
 
 export const meta = {
@@ -34,10 +35,11 @@ Your container is running... but is it working? You should have health checks de
 />
 
 
-Your container is running... but is it working? You should have health checks defined for all your containers. 
+<p class="lead">Your container is running... <strong>but is it working?</strong> You should have health checks defined for all your containers. </p>
 
 The [HEALTHCHECK](https://docs.docker.com/engine/reference/builder/#healthcheck) instruction tells Docker how to test a container to make sure it's working properly. As your infrastructure becomes increasingly complex, health checks become even more important.
 
+<LineBreakA />
 
 ## Writing the HEALTHCHECK
 Creating a health check is really easy and since we're already using Node for our application why not use it to write our health check as well?
