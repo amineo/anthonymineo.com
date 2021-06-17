@@ -1,0 +1,99 @@
+import { Highlight, LineBreakA, LineBreakB } from '@/components/Editor'
+import Image from '@/components/Image'
+import { anthonymineo } from '@/authors'
+import image from './card.jpg'
+import { tag } from '@/tags'
+
+export const meta = {
+  draft: false,
+  featured: false,
+  title: 'Solving A CORS Issue In Chrome When Serving From Browser Cache',
+  description: `CORS issues are always a treat! Especially when the issue appeared to be random and only affects Chromium-based browsers.`,
+  date: '2021-06-17T12:10:00.0Z',
+  updated: '2021-06-17T12:10:00.0Z',
+  authors: [anthonymineo],
+  tags: [tag('DevOps')],
+  slug: '/solving-a-cors-issue-when-serving-from-chromes-browser-cache/',
+  image,
+}
+
+
+export const config = { amp: 'hybrid' }
+
+
+
+<!--excerpt-->
+
+CORS issues are always a treat! Especially when the issue appeared to be random and only affects <strong>Chromium-based browsers.</strong>
+
+<!--/excerpt-->
+
+<p className="text-xl">
+CORS issues are always a treat! Especially when the issue appeared to be random and only affects <Highlight>Chromium-based browsers.</Highlight>
+</p>
+
+<LineBreakA />
+
+## The Setup
+I wrote a static script file hosted in an S3 bucket and then served via CloudFront on a different subdomain. That script also dynamically loaded another script.
+
+So the call stack looked something like this:
+ - website.com/page.html
+   - static.website.com/script1.js
+     - static.website.com/script2.js
+
+<LineBreakB />
+
+### The S3 Bucket permissions had CORS configured like this:
+```json
+[
+  {
+    "AllowedHeaders": [
+      "*"
+    ],
+    "AllowedMethods": [
+      "GET",
+      "HEAD"
+    ],
+    "AllowedOrigins": [
+      "*"
+    ],
+    "ExposeHeaders": [],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+
+Nothing crazy. We're just allowing the GET and HEAD methods, letting any origin access it, and setting a max-age.
+
+<LineBreakB />
+
+### The CloudFront distribution also had the correct headers whitelisted:
+ - Access-Control-Request-Headers
+ - Access-Control-Request-Method
+ - Origin
+
+
+## The Problem
+
+It appeared that everything was working fine in FireFox, Safari, and Chrome. However, in Chrome, when the browser served the script file from its cache, I was getting the classic CORS error:
+
+>	"No `access-control-allow-origin` header is present on the 	requested resource."
+
+As it turns out, the cached version does not contain the CORS headers in Chrome. It drops the request as `Access-Control-Allow-Origin violation` since the location is from the (disk cache) instead of `static.website.com`.
+
+
+
+## The Solution
+There are few ways to solve this.
+
+By far, the quickest way is adding the attribute `crossorigin="anonymous"` to the script tag—the [crossorigin attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/crossorigin), among other things, hints to the browser that it shouldn't cache the CORS headers.
+
+A possibly more involved approach, depending on your setup, is to have the server respond with a `Vary: Origin` header. If you're using something like Nginx, this is pretty simple as you can add a response header. Adding a response header to CloudFront is a bit tedious as you need to use Lambda@Edge, which to me felt like overkill.
+
+In the end, I formatted my script tag like `<script src="https://static.website.com/script1.js" crossorigin="anonymous">` and Chrome's CORS issue when serving from cache went away.
+
+
+<LineBreakA />
+
+**Hope this helps!** Hit me up on Twitter: [@Mineo27](https://twitter.com/Mineo27) if you have any issues/questions.
