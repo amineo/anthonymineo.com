@@ -4,8 +4,18 @@
         <description><![CDATA[AnthonyMineo.com - Blog]]></description>
         <link>https://anthonymineo.com</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Thu, 11 Mar 2021 19:13:34 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 17 Jun 2021 19:36:13 GMT</lastBuildDate>
         <atom:link href="https://anthonymineo.com/rss.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[Solving A CORS Issue In Chrome When Serving From Browser Cache]]></title>
+            <description><![CDATA[CORS issues are always a treat! Especially when the issue appeared to be random and only affects Chromium-based browsers.]]></description>
+            <link>https://anthonymineo.com/solving-a-cors-issue-when-serving-from-chromes-browser-cache/</link>
+            <guid isPermaLink="false">/solving-a-cors-issue-when-serving-from-chromes-browser-cache</guid>
+            <pubDate>Thu, 17 Jun 2021 12:10:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
         <item>
             <title><![CDATA[Easily Log Your Web Traffic to DataDog using CloudFlare Workers]]></title>
             <description><![CDATA[I love DataDog, and I love CloudFlare, and If you're aggressively caching as we do, a good portion of requests won't ever make it to the origin, which is a good thing. However, a downside is that you'll likely miss out on having complete traffic logs. Fortunately, using CloudFlare Workers can help us solve this issue.]]></description>
