@@ -61,6 +61,10 @@ export const tags = [
 		slug: 'redactor'
 	},
 	{
+		name: 'Elixir',
+		slug: 'Elixir'
+	},	
+	{
 		name: 'Test',
 		slug: 'test'
 	}

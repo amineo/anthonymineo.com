@@ -1,0 +1,132 @@
+import { Highlight, LineBreakA, LineBreakB } from '@/components/Editor'
+import Image from '@/components/Image';
+
+import { anthonymineo } from '@/authors'
+import image from './card.png'
+import {tag} from '@/tags';
+
+
+export const meta = {
+  draft: false,
+  featured: false,
+  title: "Learning Elixir by Querying a Tribes 2 Game Server with UDP Packets",
+  description: "In my path to learning Elixir, I accepted the challenge and queried a Tribes 2 server. To perform the query fully, it required sending two different packets to the server where the first byte denotes the type of information we're asking in return. The first is called the info packet, which doesn't contain much more than the server name. The second is called the status packet, which contains all the meat and potatoes.",
+  date: "2021-10-13T20:00:00.0Z",
+  updated: "2021-10-13T20:00:00.0Z",
+  authors: [anthonymineo],
+  tags: [tag("Elixir")],
+  slug: "/learning-elixir-by-querying-a-tribes-2-game-server-with-udp-packets/",
+  repo: "https://github.com/amineo/t2_server_query_elixir",
+  image,
+}
+
+
+export const config = { amp: 'hybrid' }
+
+<!--excerpt-->
+
+In my path to learning **Elixir**, I accepted the challenge and queried a Tribes 2 server. To perform the query fully, it required sending two different packets to the server where the first byte denotes the type of information we're asking in return. The first is called the `info` packet, which doesn't contain much more than the server name. The second is called the `status` packet, which contains all the meat and potatoes.
+
+<!--/excerpt-->
+
+<p className="lead">
+I started learning <strong>Elixir</strong> in my spare time because I've been intrigued with the Phoenix framework. But before I dive into Phoenix, I figured it would be best to grasp a solid foundation of Elixir <em>(and a little bit of Erlang, too)</em> first. So I thought to myself, "Self! Let's jump right into the deep end and figure it out as we go!" and so I did... after I went through <a href="https://pragmaticstudio.com/elixir">Pragmatic Studio's Elixir/OTP course</a>, of course.
+</p>
+
+<LineBreakA />
+
+## How to perform a Tribes 2 server query
+Querying a Tribes 2 server involves sending a 6-byte UDP packet, **"the query,"** where the first byte denotes the type of information we're asking for in response, and the rest are mainly there for padding but expected by the server. There are two types of query packets you must send that make up a complete query. The first is the `info` packet, and the second is the `status` packet.
+
+
+The response for the `info` packet contains mainly the server name, while the `status` packet contains all the meat and potatoes like map name, team, and player scores.
+
+The `info` query packet structure in HEX looks like `0E 02 01 02 03 04`.
+The `status` query packet structure is `12 02 01 02 03 04`.
+
+If you send a UDP query packet to any Tribes 2 server containing either the `info` or `status` structures, the server will respond to the senders address with a UDP packet containing the query result.
+
+A typical `status` result could look something like this:  
+```
+14 02 01 02 03 04 07 43 6C 61 73 73 69 63 09 4C 61 6B 52 61 62 62 69 74 0E 4D 69 6E 69 20 53 75 6E 20 
+44 72 69 65 64 A1 00 40 00 EA 08 6A 43 65 6C 65 62 72 61 74 69 6E 67 20 32 30 20 59 65 61 72 73 20 6F 
+66 20 54 72 69 62 65 73 32 21 20 4D 6F 72 65 20 69 6E 66 6F 72 6D 61 74 69 6F 6E 20 69 6E 20 44 69 73 
+63 6F 72 64 2E 20 3C 61 3A 70 6C 61 79 74 32 2E 63 6F 6D 2F 64 69 73 63 6F 72 64 3E 70 6C 61 79 74 32 
+2E 63 6F 6D 2F 64 69 73 63 6F 72 64 3C 2F 61 3E 0B 00 31 0A 53 74 6F 72 6D 09 30 0A 30
+```
+
+The response could be much larger depending on how popular the server is, as it also contains all players and scores.
+
+
+<LineBreakB />
+
+
+### Parsing a UDP packet that uses Pascal-strings 
+The response packets that Tribes 2 sends do not contain consistent delimiters except for players and scores where tabs and new-lines are used. 
+
+So, how would we parse out the mod name, game type, and server description if there are no delimiters? To make things harder, Tribes 2 was released in 2001 and is now over 20-years old with little to no documentation anywhere.
+
+If you were to convert a `status` packet to ASCII, taking only the first part of the packet, you would see something like this: `\07Classic\tLakRabbit\0eMini Sun Dried\a1\00@\00\ea\08jCelebrating`
+
+The HEX representation would look like this:
+```
+07 43 6C 61 73 73 69 63 09 4C 61 6B 52 61 62 62 69 74 0E 4D 69 6E 69 20 53 75 6E 20 44 72 69 65 64 A1 
+00 40 00 EA 08 6A 43 65 6C 65 62 72 61 74 69 6E 67
+```
+
+
+Admittedly, this took me some time to figure out, but the response uses pascal-strings to delimit different parts of the packet. Pascal strings are strings prefixed by their length.
+
+Looking back at our HEX representation:
+```
+07 43 6C 61 73 73 69 63     
+07 C  l  a  s  s  i  c
+```
+We can see that `07` followed by the next 7-bytes `43 6C 61 73 73 69 63` turns out to be the word **"Classic"** &mdash; the mod name.
+
+Then the next byte is `09`, grabbing the next 9 bytes `4C 61 6B 52 61 62 62 69 74` we get **"LakRabbit"** &mdash; the game type. 
+
+You can repeat this process for the map name and server description. After the server description, the delimiters change to tabs and new-lines.
+
+
+
+<LineBreakB />
+
+### So, how would we use Elixir to parse a packet that contained pascal strings?
+Well, as it turns out, Elixir makes this pretty easy. Since every binary in Elixir is a bitstring, you can leverage one of the basic building blocks in the [Kernal.SpecialForms](https://hexdocs.pm/elixir/Kernel.SpecialForms.html#%3C%3C%3E%3E/1-options) construct, the type operator, and use it with bitstrings!
+
+
+
+Here's how we utilize special forms and account for pascal strings:
+```elixir
+<<
+	_header             :: size(48) # skip the header, the first six characters in bits is 48 = 6 bytes
+
+    game_type_length    :: little-integer,     # 7
+    game_type           :: binary-size(game_type_length),  # Classic, 7 - chars
+
+    mission_type_length :: little-integer,  # 9
+    mission_type        :: binary-size(mission_type_length),  # LakRabbit, 9 - chars
+
+    map_name_length     :: little-integer,  # 0E as decimal -> 14
+    map_name            :: binary-size(map_name_length),  # Mini Sun Dried, 14 - chars
+
+	...
+>> = status_packet
+```
+
+As you can see, this is pretty powerful. We're stepping through the packet, mapping types and sizes to variables without any loops. Using `game_type_length` and `game_type` as an example, we're able to read the `game_type_length` as a little-integer and then reference that value for the `game_type`'s binary-size to calculate the final length of that string.
+
+You can find more about the anatomy of the [Tribes 2 UDP packet that I documented here](https://hexdocs.pm/t2_server_query/T2ServerQuery.PacketParser.html#module-udp-packet-anatomy).
+
+
+<LineBreakB />
+
+## Check out the t2_server_query package
+You can find the [t2_server_query](https://hexdocs.pm/t2_server_query/) package on Hex. If you're interested in the rest of the code, you can view the repo on [GitHub](https://github.com/amineo/t2_server_query_elixir).
+
+I'm having a blast learning Elixir, and any feedback on how I could make my code better would be greatly appreciated! It's a beautiful languange and cant wait to learn more.
+
+
+<LineBreakB />
+
