@@ -25,6 +25,23 @@ module.exports = withBundleAnalyzer({
 		modern: true
 	},
 	trailingSlash: true,
+
+	
+	async headers() {
+		return [
+		  {
+			source: '/:path*',
+			headers: [
+			  {
+				key: 'referrer-policy',
+				value: 'no-referrer-when-downgrade'
+			  }
+			],
+		  },
+		]
+	},
+
+
 	webpack: (config, options) => {
 		config.module.rules.push({
 			test: /\.(png|jpe?g|gif|mp4)$/i,
