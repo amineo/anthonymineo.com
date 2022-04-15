@@ -38,8 +38,17 @@ The [Hookdeck-CLI](https://github.com/hookdeck/hookdeck-cli) is simple and works
 Our project already uses docker-compose to wire up the various services in our app, so why not leverage what we already have? 
 
 #### Take advantage of `docker-compose.override.yml` for local development.
+ 
+
+Overriding the entrypoint command defined in the `hookdeck/hookdeck-cli` container, we can: 
+
+ - Check if a stored auth config file exists in our volume or prompt user to login; 
+ - Listen and tunnel to our target docker service.
+
 
 ```yml
+#docker-compose.override.yml
+
 version: "3.7"
 services:
 
@@ -52,7 +61,7 @@ services:
     - |
        /bin/hookdeck version
        [ -f /root/.config/hookdeck/config.toml ] && echo "Hookdeck config found!" || /bin/hookdeck login
-       /bin/hookdeck listen http://docker-service-name:8080 your-hookdeck-source
+       /bin/hookdeck listen http://target-docker-service-name:8080 your-hookdeck-source-name
 
     volumes:
       - hookdeck:/root/.config/hookdeck  # Store auth tokens in volume
