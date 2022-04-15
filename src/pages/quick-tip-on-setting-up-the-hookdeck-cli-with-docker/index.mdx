@@ -1,0 +1,83 @@
+import { Highlight, LineBreakA, LineBreakB } from '@/components/Editor'
+import Image from '@/components/Image';
+import { anthonymineo } from '@/authors'
+import image from './card.png'
+import {tag} from '@/tags';
+
+
+export const meta = {
+  draft: false,
+  featured: false,
+  title: "Quick Tip On Setting Up The Hookdeck-CLI With Docker",
+  description: "Hookdeck is a fantastic tool that helps you manage and tunnel external webhooks into a local development server, among other things. The Hookdeck-CLI is simple and works pretty well; however, I wanted its integration into our workflow to be more portable for fellow developers on our project. I was trying to avoid having to install yet-another-cli-tool.",
+  date: "2022-04-15T20:00:00.0Z",
+  updated: "2022-04-15T20:00:00.0Z",
+  authors: [anthonymineo],
+  tags: [tag("DevOps")],
+  slug: "/quick-tip-on-setting-up-the-hookdeck-cli-with-docker/",
+  image,
+}
+
+
+export const config = { amp: 'hybrid' }
+
+<!--excerpt-->
+
+Hookdeck is a fantastic tool that helps you manage and tunnel external webhooks into a local development server, among other things. The Hookdeck-CLI is simple and works pretty well; however, I wanted its integration into our workflow to be more portable for fellow developers on our project. I was trying to avoid having everyone install yet-another-cli-tool.
+
+<!--/excerpt-->
+
+<p className="lead">
+<a href="https://hookdeck.com/">Hookdeck</a> is a fantastic tool that helps you manage and tunnel external webhooks into a local development server, among other things.</p>
+
+The [Hookdeck-CLI](https://github.com/hookdeck/hookdeck-cli) is simple and works pretty well; however, I wanted its integration into our workflow to be more portable for fellow developers on our project. I was trying to avoid having everyone install yet-another-cli-tool.
+
+<LineBreakA />
+
+## Using Docker Compose
+Our project already uses docker-compose to wire up the various services in our app, so why not leverage what we already have? 
+
+#### Take advantage of `docker-compose.override.yml` for local development.
+
+```yml
+version: "3.7"
+services:
+
+  # ...
+
+  hookdeck:
+    image: "hookdeck/hookdeck-cli:v0.4.4"
+    entrypoint: ["/bin/sh","-c"]
+    command:
+    - |
+       /bin/hookdeck version
+       [ -f /root/.config/hookdeck/config.toml ] && echo "Hookdeck config found!" || /bin/hookdeck login
+       /bin/hookdeck listen http://docker-service-name:8080 your-hookdeck-source
+
+    volumes:
+      - hookdeck:/root/.config/hookdeck  # Store auth tokens in volume
+
+    networks:
+      - your-app-network # This is important! This service needs to be on the same network as your app or they wont be able to communicate
+
+
+volumes:
+  hookdeck:
+
+
+networks:
+  your-app-network:
+    driver: bridge
+
+```
+
+Now, if you run `docker-compose up hookdeck`. The hookdeck-cli container will start and **output a link to login from the terminal.** Once you login, the creds are stored in a persistent volume and are always available on `docker-compose up`.
+
+
+
+And that's it! Simple and portable. :)
+
+<LineBreakB />
+
+
+**Hope this helps!** Hit me up on Twitter: [@Mineo27](https://twitter.com/Mineo27) if you have any issues/questions.
