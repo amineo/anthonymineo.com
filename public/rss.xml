@@ -4,8 +4,28 @@
         <description><![CDATA[AnthonyMineo.com - Blog]]></description>
         <link>https://anthonymineo.com</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Thu, 17 Jun 2021 19:36:13 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 15 Apr 2022 15:19:28 GMT</lastBuildDate>
         <atom:link href="https://anthonymineo.com/rss.xml" rel="self" type="application/rss+xml"/>
+        <item>
+            <title><![CDATA[Quick Tip On Setting Up The Hookdeck-CLI With Docker]]></title>
+            <description><![CDATA[Hookdeck is a fantastic tool that helps you manage and tunnel external webhooks into a local development server, among other things. The Hookdeck-CLI is simple and works pretty well; however, I wanted its integration into our workflow to be more portable for fellow developers on our project. I was trying to avoid having to install yet-another-cli-tool.]]></description>
+            <link>https://anthonymineo.com/quick-tip-on-setting-up-the-hookdeck-cli-with-docker/</link>
+            <guid isPermaLink="false">/quick-tip-on-setting-up-the-hookdeck-cli-with-docker</guid>
+            <pubDate>Fri, 15 Apr 2022 20:00:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
+        <item>
+            <title><![CDATA[Learning Elixir by Querying a Tribes 2 Game Server with UDP Packets]]></title>
+            <description><![CDATA[In my path to learning Elixir, I accepted the challenge and queried a Tribes 2 server. To perform the query fully, it required sending two different packets to the server where the first byte denotes the type of information we're asking in return. The first is called the info packet, which doesn't contain much more than the server name. The second is called the status packet, which contains all the meat and potatoes.]]></description>
+            <link>https://anthonymineo.com/learning-elixir-by-querying-a-tribes-2-game-server-with-udp-packets/</link>
+            <guid isPermaLink="false">/learning-elixir-by-querying-a-tribes-2-game-server-with-udp-packets</guid>
+            <pubDate>Wed, 13 Oct 2021 20:00:00 GMT</pubDate>
+            <author>
+                <name>Anthony Mineo</name>
+            </author>
+        </item>
         <item>
             <title><![CDATA[Solving A CORS Issue In Chrome When Serving From Browser Cache]]></title>
             <description><![CDATA[CORS issues are always a treat! Especially when the issue appeared to be random and only affects Chromium-based browsers.]]></description>

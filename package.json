@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export",
+    "build": "next build && next export && npm run build:maps",
     "start": "next start",
     "build:maps": "npm run build:rss & npm run build:sitemap",
     "build:rss": "node ./.next/server/scripts/build-rss.js",
